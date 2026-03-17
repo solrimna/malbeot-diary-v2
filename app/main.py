@@ -1,3 +1,4 @@
+import logging
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
@@ -29,3 +30,8 @@ app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s"
+)
