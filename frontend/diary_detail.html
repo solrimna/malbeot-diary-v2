@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일기 작성 - "하루" commit()</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Petit+Formal+Script&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .page-diary-detail {
+            background:
+                radial-gradient(circle at top, rgba(232, 216, 196, 0.08), transparent 24%),
+                linear-gradient(180deg, #561C24 0%, #6D2932 100%);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .diary-detail-shell {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .diary-detail-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 28px;
+        }
+
+        .diary-detail-panel {
+            background: linear-gradient(180deg, rgba(232, 216, 196, 0.98) 0%, rgba(231, 220, 201, 0.96) 100%);
+            border: 1px solid rgba(199, 183, 163, 0.45);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.22);
+        }
+
+        .diary-detail-side {
+            background: linear-gradient(180deg, rgba(57, 24, 31, 0.8) 0%, rgba(38, 17, 22, 0.92) 100%);
+            border: 1px solid rgba(232, 216, 196, 0.12);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.22);
+        }
+
+        .diary-detail-label {
+            display: block;
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            color: rgba(86, 28, 36, 0.82);
+        }
+
+        .diary-detail-input,
+        .diary-detail-select,
+        .diary-detail-textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.24);
+            border: 1px solid rgba(199, 183, 163, 0.9);
+            border-radius: 18px;
+            padding: 16px 18px;
+            font-size: 14px;
+            color: #561C24;
+            transition: all 0.25s ease;
+        }
+
+        .diary-detail-input::placeholder,
+        .diary-detail-textarea::placeholder {
+            color: rgba(86, 28, 36, 0.45);
+        }
+
+        .diary-detail-input:focus,
+        .diary-detail-select:focus,
+        .diary-detail-textarea:focus {
+            outline: none;
+            border-color: #6D2932;
+            box-shadow: 0 0 0 3px rgba(86, 28, 36, 0.08);
+            background: rgba(255, 255, 255, 0.34);
+        }
+
+        .diary-detail-textarea {
+            min-height: 420px;
+            resize: vertical;
+            line-height: 1.8;
+        }
+
+        .diary-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .voice-btn,
+        .save-btn,
+        .cancel-btn {
+            border: none;
+            border-radius: 999px;
+            padding: 14px 24px;
+            font-size: 13px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .voice-btn {
+            background: rgba(86, 28, 36, 0.08);
+            color: #561C24;
+            border: 1px solid rgba(86, 28, 36, 0.14);
+        }
+
+        .save-btn {
+            background: #561C24;
+            color: #E8D8C4;
+        }
+
+        .cancel-btn {
+            background: transparent;
+            color: #561C24;
+            border: 1px solid rgba(86, 28, 36, 0.2);
+        }
+
+        .voice-btn:hover,
+        .save-btn:hover,
+        .cancel-btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.94;
+        }
+
+        .ai-preview-card {
+            border-radius: 24px;
+            padding: 22px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(232, 216, 196, 0.12);
+        }
+
+        .ai-preview-title {
+            color: #E8D8C4;
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            opacity: 0.74;
+        }
+
+        .ai-preview-body {
+            color: rgba(232, 216, 196, 0.88);
+            line-height: 1.9;
+            font-size: 14px;
+        }
+
+        @media (max-width: 1024px) {
+            .diary-detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .diary-meta-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .diary-detail-panel,
+            .diary-detail-side {
+                padding: 22px;
+            }
+
+            .diary-detail-textarea {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body class="page-diary-detail min-h-screen relative font-kr">
+
+    <a href="my-diary.html" class="absolute top-8 left-8 text-[#E8D8C4] flex items-center gap-2 hover:opacity-70 transition-opacity z-50">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <span class="tracking-widest text-sm uppercase">Back to Diary</span>
+    </a>
+
+    <main class="min-h-screen px-6 py-24 md:px-10 lg:px-16">
+        <div class="diary-detail-shell">
+            <div class="text-center mb-12">
+                <p class="font-script text-2xl md:text-3xl text-[#E8D8C4]/85 mb-3">Write your day</p>
+                <h1 class="text-3xl md:text-5xl tracking-tight text-[#E8D8C4] font-semibold mb-4">
+                    오늘의 일기 작성
+                </h1>
+                <div class="w-24 h-[1px] mx-auto bg-[#C7B7A3]/70 mb-5"></div>
+                <p class="text-[#E8D8C4] text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+                    오늘 있었던 일과 감정을 자유롭게 적어보세요. 나중에는 AI가 이 내용을 정리하고, 페르소나에 맞는 따뜻한 반응을 남겨줄 수 있어요.
+                </p>
+            </div>
+
+            <div class="diary-detail-grid">
+                <section class="diary-detail-panel">
+                    <div class="flex items-center justify-between gap-4 mb-8">
+                        <div>
+                            <p class="font-script text-xl text-[#561C24]/80 mb-1">Diary editor</p>
+                            <h2 class="text-2xl md:text-3xl font-semibold text-[#561C24]">나의 하루 기록하기</h2>
+                        </div>
+
+                        <button type="button" class="voice-btn">
+                            음성으로 입력
+                        </button>
+                    </div>
+
+                    <form class="space-y-6">
+                        <div class="diary-meta-grid">
+                            <div>
+                                <label class="diary-detail-label">날짜</label>
+                                <input type="date" class="diary-detail-input">
+                            </div>
+
+                            <div>
+                                <label class="diary-detail-label">오늘의 감정</label>
+                                <select class="diary-detail-select">
+                                    <option>선택하기</option>
+                                    <option>기쁨</option>
+                                    <option>평온</option>
+                                    <option>설렘</option>
+                                    <option>뿌듯함</option>
+                                    <option>우울함</option>
+                                    <option>불안함</option>
+                                    <option>복잡함</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="diary-detail-label">날씨</label>
+                                <select class="diary-detail-select">
+                                    <option>선택하기</option>
+                                    <option>맑음</option>
+                                    <option>흐림</option>
+                                    <option>비</option>
+                                    <option>눈</option>
+                                    <option>바람</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="diary-detail-label">제목</label>
+                            <input type="text" class="diary-detail-input" placeholder="오늘 하루를 한 줄로 남겨보세요">
+                        </div>
+
+                        <div>
+                            <label class="diary-detail-label">일기 내용</label>
+                            <textarea class="diary-detail-textarea" placeholder="예: 오늘은 오랜만에 친구를 만나 카페에 갔다. 별거 아닌 이야기였는데 이상하게 마음이 좀 풀렸다. 집에 돌아오는 길에는 비가 조금 내렸고, 괜히 영화 속 한 장면 같다고 느꼈다."></textarea>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                            <button type="button" class="save-btn">저장하기</button>
+                            <a href="my-diary.html" class="cancel-btn inline-flex items-center justify-center">취소</a>
+                        </div>
+                    </form>
+                </section>
+
+                <aside class="diary-detail-side">
+                    <div class="mb-8">
+                        <p class="font-script text-xl text-[#E8D8C4]/85 mb-1">AI preview</p>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-[#E8D8C4]">AI 반응 미리보기</h2>
+                        <p class="text-[#E8D8C4]/72 text-sm mt-3 leading-relaxed">
+                            여기에는 나중에 AI가 일기를 정리한 내용과 페르소나에 맞는 반응이 표시될 수 있어요.
+                        </p>
+                    </div>
+
+                    <div class="space-y-5">
+                        <div class="ai-preview-card">
+                            <div class="ai-preview-title">AI 요약</div>
+                            <div class="ai-preview-body">
+                                오늘 하루의 핵심 내용을 짧게 정리하는 영역이에요.<br>
+                                예를 들면, “친구와 카페에서 시간을 보내며 마음이 한결 편안해진 하루”처럼 정리될 수 있어요.
+                            </div>
+                        </div>
+
+                        <div class="ai-preview-card">
+                            <div class="ai-preview-title">AI 한마디</div>
+                            <div class="ai-preview-body">
+                                페르소나 설정에 따라 다정한 선생님, 친한 친구, 차분한 상담가 같은 말투로 반응이 들어갈 수 있어요.<br><br>
+                                예: “오늘 마음이 조금은 가벼워진 것 같아서 다행이에요. 이런 평온한 순간도 분명 소중한 하루의 한 장면이에요.”
+                            </div>
+                        </div>
+
+                        <div class="ai-preview-card">
+                            <div class="ai-preview-title">태그 예시</div>
+                            <div class="ai-preview-body">
+                                #친구 #카페 #비오는날 #감정정리 #편안함
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

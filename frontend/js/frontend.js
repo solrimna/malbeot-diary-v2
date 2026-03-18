@@ -166,14 +166,10 @@ function saveDiaryEntry() {
 
     book.innerHTML = `
         <div class="diary-book-inner">
-            <div>
-                <div class="diary-book-date">${escapeHtml(formatDiaryDate(date))}</div>
-                <div class="diary-book-title">${escapeHtml(title)}</div>
-                <div class="diary-book-preview">${escapeHtml(content).replace(/\n/g, '<br>')}</div>
-            </div>
+            <div class="diary-book-date">${escapeHtml(formatDiaryDate(date))}</div>
+            <div class="diary-book-title">${escapeHtml(title)}</div>
 
             <div class="diary-book-footer">
-                <span class="diary-book-badge">Diary</span>
                 <button type="button" class="diary-book-delete" onclick="deleteDiaryBook(this)">삭제</button>
             </div>
         </div>
@@ -187,10 +183,15 @@ function saveDiaryEntry() {
 
     diaryShelfIndex = 0;
     updateDiaryShelfPosition();
+    renderDiaryProgress();
     closeDiaryModal();
 }
 
 function deleteDiaryBook(button) {
+    if (!confirm('삭제 하시겠습니까?')) {
+        return;
+    }
+
     const book = button.closest('.diary-book');
     const shelf = document.getElementById('diary-shelf');
 
@@ -215,6 +216,7 @@ function deleteDiaryBook(button) {
     }
 
     updateDiaryShelfPosition();
+    renderDiaryProgress();
 }
 
 function moveDiaryShelf(direction) {
@@ -231,6 +233,7 @@ function moveDiaryShelf(direction) {
     if (diaryShelfIndex > maxIndex) diaryShelfIndex = maxIndex;
 
     updateDiaryShelfPosition();
+    renderDiaryProgress();
 }
 
 function updateDiaryShelfPosition() {
@@ -238,10 +241,40 @@ function updateDiaryShelfPosition() {
     if (!shelf) return;
 
     const isMobile = window.innerWidth <= 768;
-    const step = isMobile ? 240 : 286;
+    const step = isMobile ? 90 : 106;
     const offset = diaryShelfIndex * step;
 
     shelf.style.transform = `translateX(-${offset}px)`;
+}
+
+function renderDiaryProgress() {
+    const progress = document.getElementById('diary-progress');
+    const shelf = document.getElementById('diary-shelf');
+
+    if (!progress || !shelf) return;
+
+    const books = shelf.querySelectorAll('.diary-book');
+    progress.innerHTML = '';
+
+    if (!books.length) {
+        for (let i = 0; i < 18; i++) {
+            const dot = document.createElement('span');
+            dot.className = 'diary-progress-dot';
+            progress.appendChild(dot);
+        }
+        return;
+    }
+
+    books.forEach((_, index) => {
+        const dot = document.createElement('span');
+        dot.className = 'diary-progress-dot';
+
+        if (index === diaryShelfIndex) {
+            dot.classList.add('active');
+        }
+
+        progress.appendChild(dot);
+    });
 }
 
 function fakeDiarySearch() {
@@ -273,7 +306,10 @@ function formatDiaryDate(dateString) {
     return `${year}.${month}.${day}`;
 }
 
-window.addEventListener('resize', updateDiaryShelfPosition);
+window.addEventListener('resize', () => {
+    updateDiaryShelfPosition();
+    renderDiaryProgress();
+});
 
 window.addEventListener('DOMContentLoaded', () => {
     const shelfWrapper = document.querySelector('.diary-shelf-wrapper');
@@ -295,4 +331,6 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         }, { passive: false });
     }
+
+    renderDiaryProgress();
 });
