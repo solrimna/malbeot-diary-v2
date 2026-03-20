@@ -1,18 +1,26 @@
 const API_BASE_URL = "/api/v1";
 
 async function apiRequest(path, options = {}) {
+    const token = localStorage.getItem("access_token");
+
     const response = await fetch(`${API_BASE_URL}${path}`, {
         headers: {
             "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...(options.headers || {}),
         },
         ...options,
     });
 
+    if (response.status === 204) {
+        return null;
+    }
+
     const contentType = response.headers.get("content-type") || "";
-    const payload = contentType.includes("application/json")
-        ? await response.json()
-        : await response.text();
+    const rawText = await response.text();
+    const payload = contentType.includes("application/json") && rawText
+        ? JSON.parse(rawText)
+        : rawText;
 
     if (!response.ok) {
         const detail = typeof payload === "object" && payload !== null
@@ -22,4 +30,8 @@ async function apiRequest(path, options = {}) {
     }
 
     return payload;
+}
+
+function getJsonBody(data) {
+    return JSON.stringify(data);
 }

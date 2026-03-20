@@ -2,15 +2,28 @@ import logging
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
+from sqlalchemy import inspect, text
 
 from app.database import engine, Base
 from app.api.v1.router import api_router
+
+
+def ensure_diary_columns(sync_conn) -> None:
+    inspector = inspect(sync_conn)
+    columns = {column["name"] for column in inspector.get_columns("diaries")}
+
+    if "emotion" not in columns:
+        sync_conn.execute(text("ALTER TABLE diaries ADD COLUMN emotion VARCHAR(100)"))
+
+    if "weather" not in columns:
+        sync_conn.execute(text("ALTER TABLE diaries ADD COLUMN weather VARCHAR(100)"))
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(ensure_diary_columns)
     yield
 
 

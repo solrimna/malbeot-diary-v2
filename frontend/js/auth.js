@@ -106,14 +106,14 @@ function checkPasswordMatch() {
     }
 
     if (pw === pwConfirm) {
-        msg.textContent = "비밀번호가 일치합니다.";
+        msg.textContent = "Passwords match.";
         msg.style.color = "#6B8F5E";
         msg.classList.remove("hidden");
         confirmInput.style.borderColor = "#6B8F5E";
         return true;
     }
 
-    msg.textContent = "비밀번호가 일치하지 않습니다.";
+    msg.textContent = "Passwords do not match.";
     msg.style.color = "#561C24";
     msg.classList.remove("hidden");
     confirmInput.style.borderColor = "#561C24";
@@ -148,7 +148,7 @@ async function handleLoginSubmit(event) {
     const password = passwordInput?.value || "";
 
     if (!username || !password) {
-        setMessage(message, "아이디와 비밀번호를 입력해주세요.", true);
+        setMessage(message, "Please enter your ID and password.", true);
         return;
     }
 
@@ -157,12 +157,12 @@ async function handleLoginSubmit(event) {
     try {
         const result = await login(username, password);
         saveAuth(result.access_token, result.user);
-        setMessage(message, "로그인되었습니다. 잠시 후 이동합니다.");
+        setMessage(message, "Login successful. Redirecting...");
         window.setTimeout(() => {
-            window.location.href = "my-diary.html";
+            window.location.href = "index.html";
         }, 500);
     } catch (error) {
-        setMessage(message, error.message || "로그인에 실패했습니다.", true);
+        setMessage(message, error.message || "Login failed.", true);
     } finally {
         setButtonLoading(submitButton, false, "Sign In", "Signing In...");
     }
@@ -184,12 +184,12 @@ async function handleSignupSubmit(event) {
     const password = passwordInput?.value || "";
 
     if (!nickname || !username || !password) {
-        setMessage(message, "모든 항목을 입력해주세요.", true);
+        setMessage(message, "Please fill out all fields.", true);
         return;
     }
 
     if (!checkPasswordMatch()) {
-        setMessage(message, "비밀번호 확인이 일치하지 않습니다.", true);
+        setMessage(message, "Password confirmation does not match.", true);
         return;
     }
 
@@ -197,7 +197,7 @@ async function handleSignupSubmit(event) {
 
     try {
         await register({ nickname, username, password });
-        setMessage(message, "회원가입이 완료되었습니다. 로그인해 주세요.");
+        setMessage(message, "Sign-up complete. Please log in.");
         event.target.reset();
 
         const pwMessage = document.getElementById("password-match-msg");
@@ -211,7 +211,7 @@ async function handleSignupSubmit(event) {
         toggleForm("login");
         document.getElementById("login-username")?.focus();
     } catch (error) {
-        setMessage(message, error.message || "회원가입에 실패했습니다.", true);
+        setMessage(message, error.message || "Sign-up failed.", true);
     } finally {
         setButtonLoading(submitButton, false, "Join Us", "Joining...");
     }
@@ -228,7 +228,7 @@ function initLoginPage() {
     }
 
     if (getAccessToken()) {
-        window.location.href = "my-diary.html";
+        window.location.href = "index.html";
         return;
     }
 

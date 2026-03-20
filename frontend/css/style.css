@@ -116,10 +116,28 @@
     overflow: hidden;
 }
 
+.page-login input {
+    background-color: transparent;
+    box-shadow: none;
+}
+
 input:focus {
     outline: none;
     border-color: var(--bg-color);
     box-shadow: 0 0 0 2px rgba(86, 28, 36, 0.1);
+}
+
+.page-login input:focus {
+    background-color: transparent;
+}
+
+.page-login input:-webkit-autofill,
+.page-login input:-webkit-autofill:hover,
+.page-login input:-webkit-autofill:focus,
+.page-login input:-webkit-autofill:active {
+    -webkit-text-fill-color: #561C24;
+    -webkit-box-shadow: 0 0 0 1000px #E8D8C4 inset;
+    transition: background-color 9999s ease-out 0s;
 }
 
 .hidden-form {
@@ -657,7 +675,7 @@ input:focus {
 }
 
 /* =========================
-   diary_detail.html
+   diary_write.html
 ========================= */
 .page-diary-detail {
     background:
@@ -739,13 +757,14 @@ input:focus {
 
 .diary-meta-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
 }
 
 .voice-btn,
 .save-btn,
-.cancel-btn {
+.cancel-btn,
+.delete-btn {
     border: none;
     border-radius: 999px;
     padding: 14px 24px;
@@ -773,9 +792,16 @@ input:focus {
     border: 1px solid rgba(86, 28, 36, 0.2);
 }
 
+.delete-btn {
+    background: #8f2330;
+    color: #E8D8C4;
+    border: 1px solid rgba(143, 35, 48, 0.35);
+}
+
 .voice-btn:hover,
 .save-btn:hover,
-.cancel-btn:hover {
+.cancel-btn:hover,
+.delete-btn:hover {
     transform: translateY(-1px);
     opacity: 0.94;
 }
@@ -786,6 +812,31 @@ input:focus {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(232, 216, 196, 0.12);
     min-height: 210px;
+}
+
+.diary-side-select-card {
+    min-height: auto;
+}
+
+.diary-side-label {
+    color: rgba(232, 216, 196, 0.82);
+}
+
+.diary-side-select {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(232, 216, 196, 0.12);
+    color: #E8D8C4;
+}
+
+.diary-side-select option {
+    color: #561C24;
+    background-color: #E8D8C4;
+}
+
+.diary-side-select:focus {
+    border-color: rgba(232, 216, 196, 0.24);
+    box-shadow: 0 0 0 3px rgba(232, 216, 196, 0.08);
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .ai-preview-title {

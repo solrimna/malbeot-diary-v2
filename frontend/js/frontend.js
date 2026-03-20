@@ -17,6 +17,29 @@ function formatDiaryDate(dateString) {
     return `${year}.${month}.${day}`;
 }
 
+function disableAutocompleteOutsideLogin() {
+    const body = document.body;
+    if (!body || body.classList.contains('page-login')) {
+        return;
+    }
+
+    document.querySelectorAll('form').forEach((form) => {
+        form.setAttribute('autocomplete', 'off');
+    });
+
+    document.querySelectorAll('input, textarea').forEach((field) => {
+        const type = (field.getAttribute('type') || '').toLowerCase();
+        if (['hidden', 'checkbox', 'radio', 'button', 'submit'].includes(type)) {
+            return;
+        }
+
+        field.setAttribute('autocomplete', 'off');
+        field.setAttribute('autocorrect', 'off');
+        field.setAttribute('autocapitalize', 'off');
+        field.setAttribute('spellcheck', 'false');
+    });
+}
+
 /* =========================
    login.html
 ========================= */
@@ -59,7 +82,7 @@ function addPersona() {
     const expression = expressionInput.value.trim();
 
     if (!name || !summary || !tone || !style || !expression) {
-        alert('紐⑤뱺 ??ぉ???낅젰?댁＜?몄슂.');
+        alert('모든 항목을 입력해주세요.');
         return;
     }
 
@@ -77,7 +100,7 @@ function addPersona() {
                 <div class="persona-card-title">${escapeHtml(name)}</div>
                 <div class="persona-card-summary">${escapeHtml(summary)}</div>
             </div>
-            <button type="button" class="persona-delete-btn" onclick="deletePersona(this)">??젣</button>
+            <button type="button" class="persona-delete-btn" onclick="deletePersona(this)">삭제</button>
         </div>
 
         <div class="mb-4">
@@ -86,17 +109,17 @@ function addPersona() {
 
         <div class="persona-meta">
             <div class="persona-meta-item">
-                <span class="persona-meta-label">留먰닾 / 遺꾩쐞湲?/span>
+                <span class="persona-meta-label">말투 / 분위기</span>
                 <div class="persona-meta-value">${escapeHtml(tone)}</div>
             </div>
 
             <div class="persona-meta-item">
-                <span class="persona-meta-label">AI 諛섏쓳 ?ㅽ???/span>
+                <span class="persona-meta-label">AI 반응 스타일</span>
                 <div class="persona-meta-value">${escapeHtml(style).replace(/\n/g, '<br>')}</div>
             </div>
 
             <div class="persona-meta-item">
-                <span class="persona-meta-label">?먯＜ ?곕뒗 ?쒗쁽</span>
+                <span class="persona-meta-label">자주 쓰는 표현</span>
                 <div class="persona-meta-value">${escapeHtml(expression).replace(/\n/g, '<br>')}</div>
             </div>
         </div>
@@ -125,8 +148,8 @@ function deletePersona(button) {
     if (cards.length === 0) {
         personaList.innerHTML = `
             <div class="persona-empty">
-                ?꾩쭅 留뚮뱺 ?섎Ⅴ?뚮굹媛 ?놁뼱??<br>
-                ?쇱そ?먯꽌 泥?踰덉㎏ ?섎Ⅴ?뚮굹瑜?留뚮뱾?대낫?몄슂.
+                아직 만든 페르소나가 없어요.<br>
+                왼쪽에서 첫 번째 페르소나를 만들어보세요.
             </div>
         `;
     }
@@ -175,7 +198,7 @@ function saveDiaryEntry() {
     const content = contentInput.value.trim();
 
     if (!date || !title || !content) {
-        alert('?좎쭨, ?쒕ぉ, ?쇨린 ?댁슜??紐⑤몢 ?낅젰?댁＜?몄슂.');
+        alert('날짜, 제목, 일기 내용을 모두 입력해주세요.');
         return;
     }
 
@@ -192,7 +215,7 @@ function saveDiaryEntry() {
             <div class="diary-book-title">${escapeHtml(title)}</div>
 
             <div class="diary-book-footer">
-                <button type="button" class="diary-book-delete" onclick="deleteDiaryBook(this)">??젣</button>
+                <button type="button" class="diary-book-delete" onclick="deleteDiaryBook(this)">삭제</button>
             </div>
         </div>
     `;
@@ -210,7 +233,7 @@ function saveDiaryEntry() {
 }
 
 function deleteDiaryBook(button) {
-    if (!confirm('??젣 ?섏떆寃좎뒿?덇퉴?')) {
+    if (!confirm('삭제하시겠습니까?')) {
         return;
     }
 
@@ -225,8 +248,8 @@ function deleteDiaryBook(button) {
     if (remainingBooks.length === 0) {
         shelf.innerHTML = `
             <div class="diary-empty-book" id="diary-empty-state">
-                ?꾩쭅 ??λ맂 ?쇨린媛 ?놁뼱??<br>
-                泥?踰덉㎏ ?섎（瑜?梨낆쑝濡?留뚮뱾?대낫?몄슂.
+                아직 저장된 일기가 없어요.<br>
+                첫 번째 하루를 책으로 만들어보세요.
             </div>
         `;
         diaryShelfIndex = 0;
@@ -308,20 +331,20 @@ function fakeDiarySearch() {
     const keyword = input.value.trim();
 
     if (!keyword) {
-        alert('寃?됲븯怨??띠? ?댁슜???낅젰?댁＜?몄슂.');
+        alert('검색하고 싶은 내용을 입력해주세요.');
         return;
     }
 
     result.innerHTML = `
-        "${escapeHtml(keyword)}" ? 愿?⑤맂 ?쇨린瑜?李얜뒗 AI 寃??湲곕뒫???ㅼ뼱媛??먮━?덉슂.<br>
-        吏湲덉? UI留?留뚮뱺 ?곹깭?닿퀬, ?섏쨷??鍮꾩듂???쇨린 ?댁슜?대굹 ?대떦 ?좎쭨瑜?李얠븘二쇰뒗 湲곕뒫?쇰줈 ?곌껐?섎㈃ ?쇱슂.
+        "${escapeHtml(keyword)}" 와 관련한 일기를 찾는 AI 검색 기능이 들어갈 자리예요.<br>
+        지금은 UI만 만든 상태이고, 나중엔 비슷한 일기 내용이나 해당 날짜를 찾아주는 기능으로 연결하면 좋아요.
     `;
 }
 
 /* =========================
-   diary_detail.html
+   diary_write.html
 ========================= */
-/* 현재 diary_detail.html 전용 스크립트는 없습니다. */
+/* 현재 diary_write.html 전용 스크립트는 없습니다. */
 
 /* =========================
    my-diary.html Events
@@ -332,6 +355,8 @@ window.addEventListener('resize', () => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
+    disableAutocompleteOutsideLogin();
+
     const shelfWrapper = document.querySelector('.diary-shelf-wrapper');
 
     if (shelfWrapper) {
