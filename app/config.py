@@ -31,3 +31,6 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+TEMP_USER_ID = 1

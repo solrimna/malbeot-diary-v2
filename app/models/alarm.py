@@ -1,17 +1,16 @@
-# 담당: C팀원
-import uuid
-from datetime import datetime, time
-from sqlalchemy import String, Time, Boolean, DateTime, ForeignKey, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Column, Integer, String, Boolean, Time, DateTime
+from sqlalchemy.sql import func
+
 from app.database import Base
 
 
-class DiaryAlarm(Base):
-    __tablename__ = "diary_alarms"
+class Alarm(Base):
+    __tablename__ = "alarms"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
-    alarm_time: Mapped[time] = mapped_column(Time, nullable=False)
-    repeat_days: Mapped[str | None] = mapped_column(String(30), nullable=True)   # MON,WED,FRI 형식, null=매일
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, nullable=False, index=True)
+    alarm_time = Column(Time, nullable=False)
+    repeat_days = Column(String, nullable=False)  # 예: MON,WED,FRI
+    is_enabled = Column(Boolean, default=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    last_triggered_at = Column(DateTime, nullable=True)

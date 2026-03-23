@@ -2,16 +2,19 @@ import logging
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
-
+from app.services.alarm_scheduler import start_scheduler, stop_scheduler
 from app.database import engine, Base
 from app.api.v1.router import api_router
 
+app = FastAPI()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    start_scheduler()
     yield
+    stop_scheduler()
 
 
 app = FastAPI(
