@@ -183,7 +183,9 @@ async function handleDiaryCreateSubmit(event) {
             hashtags: [],
             persona_id: personaSelect?.value || null,
         });
-        window.location.href = `diary_read.html?id=${encodeURIComponent(diary.id)}`;
+        // window.location.href = `diary_read.html?id=${encodeURIComponent(diary.id)}`;
+        const autoplay = document.getElementById("ai-autoplay-toggle")?.classList.contains("is-on") ? "1" : "0";
+        window.location.href = `diary_read.html?id=${encodeURIComponent(diary.id)}&autoplay=${autoplay}`;
 
     } catch (error) {
         window.alert(error.message || "일기 저장에 실패했어요.");
@@ -204,9 +206,9 @@ function initDiaryListPage() {
 
 function initDiaryDetailPage() {
     const form = document.getElementById("diary-create-form");
-    const autoSummaryToggle = document.getElementById("ai-auto-summary-toggle");
-    const autoSummaryState = document.getElementById("ai-auto-summary-state");
-    const manualSummaryButton = document.getElementById("ai-manual-summary-button");
+    // const autoSummaryToggle = document.getElementById("ai-auto-summary-toggle");
+    // const autoSummaryState = document.getElementById("ai-auto-summary-state");
+    // const manualSummaryButton = document.getElementById("ai-manual-summary-button");
     const personaSelect = document.getElementById("diary-persona-select");
 
     if (!form) {
@@ -220,13 +222,26 @@ function initDiaryDetailPage() {
 
     populatePersonaSelect(personaSelect);
 
-    if (autoSummaryToggle && autoSummaryState && manualSummaryButton) {
-        autoSummaryToggle.addEventListener("click", () => {
-            const isOn = autoSummaryToggle.classList.contains("is-on");
-            autoSummaryToggle.classList.toggle("is-on", !isOn);
-            autoSummaryToggle.setAttribute("aria-pressed", String(!isOn));
-            autoSummaryState.textContent = isOn ? "OFF" : "ON";
-            manualSummaryButton.classList.toggle("hidden", !isOn);
+    populatePersonaSelect(personaSelect);
+
+    // if (autoSummaryToggle && autoSummaryState && manualSummaryButton) {
+    //     autoSummaryToggle.addEventListener("click", () => {
+    //         const isOn = autoSummaryToggle.classList.contains("is-on");
+    //         autoSummaryToggle.classList.toggle("is-on", !isOn);
+    //         autoSummaryToggle.setAttribute("aria-pressed", String(!isOn));
+    //         autoSummaryState.textContent = isOn ? "OFF" : "ON";
+    //         manualSummaryButton.classList.toggle("hidden", !isOn);
+    //     });
+    // }
+
+    const autoplayToggle = document.getElementById("ai-autoplay-toggle");
+    const autoplayState = document.getElementById("ai-autoplay-state");
+    if (autoplayToggle && autoplayState) {
+        autoplayToggle.addEventListener("click", () => {
+            const isOn = autoplayToggle.classList.contains("is-on");
+            autoplayToggle.classList.toggle("is-on", !isOn);
+            autoplayToggle.setAttribute("aria-pressed", String(!isOn));
+            autoplayState.textContent = isOn ? "OFF" : "ON";
         });
     }
 
@@ -273,6 +288,56 @@ async function initDiaryReadPage() {
         contentEl.value = diary.content || "";
         await populatePersonaSelect(personaSelect, diary.persona_id || "");
         setDiaryReadOnly(fields, true);
+
+        // 피드백 조회 + TTS 버튼 연결
+        try {
+            const feedback = await apiRequest(`/feedback/${encodeURIComponent(diaryId)}`, { method: "GET" });
+            const reviewEl = document.getElementById("diary-read-review");
+            const ttsButton = document.getElementById("tts-play-button");
+            const audioEl = document.getElementById("tts-audio");
+            const autoplay = params.get("autoplay") === "1";
+
+            if (reviewEl && feedback.feedback_text) {
+                reviewEl.textContent = feedback.feedback_text;
+            }
+
+            async function playTTS() {
+                ttsButton.disabled = true;
+                ttsButton.textContent = "생성 중...";
+                try {
+                    const token = localStorage.getItem("access_token");
+                    const ttsResponse = await fetch(`${API_BASE_URL}/voice/tts`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                        },
+                        body: JSON.stringify({ text: feedback.feedback_text }),
+                    });
+                    if (ttsResponse.ok) {
+                        const audioBlob = await ttsResponse.blob();
+                        audioEl.src = URL.createObjectURL(audioBlob);
+                        audioEl.classList.remove("hidden");
+                        audioEl.play();
+                        ttsButton.textContent = "🔊 다시 듣기";
+                    }
+                } catch (_) {
+                    ttsButton.textContent = "🔊 듣기";
+                } finally {
+                    ttsButton.disabled = false;
+                }
+            }
+
+            if (ttsButton && feedback.feedback_text) {
+                ttsButton.classList.remove("hidden");
+                ttsButton.addEventListener("click", playTTS);
+                if (autoplay) {
+                    playTTS();
+                }
+            }
+        } catch (_) {
+            // 피드백 없어도 페이지는 정상 표시
+        }
 
         if (rerollSummaryButton) {
             rerollSummaryButton.addEventListener("click", () => {

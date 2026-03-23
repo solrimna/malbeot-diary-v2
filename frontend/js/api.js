@@ -16,6 +16,13 @@ async function apiRequest(path, options = {}) {
         return null;
     }
 
+    if (response.status === 401) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("auth_user");
+        window.location.href = "login.html";
+        return;
+    }
+
     const contentType = response.headers.get("content-type") || "";
     const rawText = await response.text();
     const payload = contentType.includes("application/json") && rawText
