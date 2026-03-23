@@ -379,6 +379,185 @@
     font-size: 14px;
 }
 
+/* =====================================================
+   profile.html – 사이드바 레이아웃
+===================================================== */
+
+.profile-body-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.profile-sidebar-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(232, 216, 196, 0.12);
+    border-radius: 34px;
+    padding: 28px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.18);
+    position: sticky;
+    top: 24px;
+}
+
+.profile-sid-identity {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+}
+
+.profile-sid-avatar {
+    position: relative;
+    width: 86px;
+    height: 86px;
+    border-radius: 999px;
+    background: rgba(232, 216, 196, 0.1);
+    border: 2px solid rgba(232, 216, 196, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #E8D8C4;
+    flex-shrink: 0;
+}
+
+.profile-sid-avatar-icon {
+    width: 46px;
+    height: 46px;
+}
+
+.profile-sid-avatar-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 999px;
+}
+
+.profile-sid-avatar-img.hidden { display: none; }
+
+.profile-sid-nickname-wrap { text-align: center; }
+
+.profile-sid-nickname-label {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(232, 216, 196, 0.48);
+    margin-bottom: 4px;
+}
+
+.profile-sid-nickname {
+    font-size: 17px;
+    font-weight: 600;
+    color: #E8D8C4;
+    letter-spacing: 0.04em;
+    word-break: break-all;
+}
+
+.profile-sid-divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(232, 216, 196, 0.1);
+}
+
+.profile-sid-stats {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(232, 216, 196, 0.1);
+    border-radius: 20px;
+    padding: 16px 14px;
+    text-align: center;
+}
+
+.profile-sid-stats-label {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(232, 216, 196, 0.48);
+    margin-bottom: 10px;
+}
+
+.profile-sid-stats-message {
+    font-size: 13px;
+    line-height: 1.7;
+    color: rgba(232, 216, 196, 0.82);
+    word-break: keep-all;
+}
+
+.profile-sid-stats-message.is-perfect {
+    color: #C7B7A3;
+}
+
+.profile-sid-logout {
+    width: 100%;
+    border: 1px solid rgba(232, 216, 196, 0.18);
+    background: transparent;
+    color: rgba(232, 216, 196, 0.62);
+    border-radius: 999px;
+    padding: 12px 16px;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin-top: auto;
+}
+
+.profile-sid-logout:hover {
+    background: rgba(232, 216, 196, 0.08);
+    color: #E8D8C4;
+    border-color: rgba(232, 216, 196, 0.32);
+}
+
+.profile-main-content { min-width: 0; }
+
+/* 달력 셀 확대 */
+.profile-calendar-cell {
+    min-height: 140px;
+}
+
+.profile-calendar-day {
+    font-size: 20px;
+}
+
+@media (max-width: 900px) {
+    .profile-body-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-sidebar-card {
+        position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        border-radius: 28px;
+        padding: 20px 16px;
+        gap: 14px;
+    }
+
+    .profile-sid-identity {
+        flex-direction: row;
+        align-items: center;
+        gap: 14px;
+        width: auto;
+        flex: 1 1 auto;
+    }
+
+    .profile-sid-nickname-wrap { text-align: left; }
+    .profile-sid-divider       { display: none; }
+    .profile-sid-stats         { flex: 1 1 100%; }
+    .profile-sid-logout        { flex: 1 1 100%; margin-top: 0; }
+
+    .profile-calendar-cell { min-height: 90px; }
+    .profile-calendar-day  { font-size: 16px; }
+}
+
 @keyframes slideUpFadeIn {
     0% {
         opacity: 0;
@@ -825,7 +1004,7 @@ input:focus {
     padding-bottom: 40px;
 }
 
-/* ── 책 래퍼: 3D 원근감 컨테이너 ── */
+/* ── 책 래퍼 ── */
 .diary-book {
     position: relative;
     width: 108px;
@@ -839,7 +1018,6 @@ input:focus {
     filter: drop-shadow(0 18px 28px rgba(0,0,0,0.38));
 }
 
-/* 높이 변형 – 4종 순환 */
 .diary-book:nth-child(4n+1) { height: 380px; }
 .diary-book:nth-child(4n+2) { height: 468px; }
 .diary-book:nth-child(4n+3) { height: 412px; }
@@ -850,17 +1028,14 @@ input:focus {
     filter: drop-shadow(0 34px 40px rgba(0,0,0,0.48));
 }
 
-/* ── 책 표지 (앞면) ── */
+/* ── 책 표지 ── */
 .diary-book-cover {
     position: absolute;
     inset: 0;
     border-radius: 3px 10px 10px 3px;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
 }
 
-/* 4종 커버 컬러 팔레트 */
 .diary-book:nth-child(4n+1) .diary-book-cover {
     background: linear-gradient(160deg, #c9b8a3 0%, #9e8a76 60%, #7a6655 100%);
 }
@@ -874,21 +1049,17 @@ input:focus {
     background: linear-gradient(160deg, #3d4a3a 0%, #263324 60%, #141d12 100%);
 }
 
-/* 커버 광택 오버레이 */
 .diary-book-cover::before {
     content: "";
     position: absolute;
     inset: 0;
-    background:
-        linear-gradient(105deg,
-            rgba(255,255,255,0.18) 0%,
-            rgba(255,255,255,0.04) 38%,
-            transparent 60%);
-    border-radius: inherit;
+    background: linear-gradient(105deg,
+        rgba(255,255,255,0.18) 0%,
+        rgba(255,255,255,0.04) 38%,
+        transparent 60%);
     pointer-events: none;
 }
 
-/* 커버 오른쪽 그림자 – 책장 넘김 느낌 */
 .diary-book-cover::after {
     content: "";
     position: absolute;
@@ -896,11 +1067,10 @@ input:focus {
     width: 28%;
     height: 100%;
     background: linear-gradient(to left, rgba(0,0,0,0.22), transparent);
-    border-radius: 0 10px 10px 0;
     pointer-events: none;
 }
 
-/* ── 척추(spine) – 왼쪽 세로 줄 ── */
+/* ── 척추(spine) ── */
 .diary-book-spine {
     position: absolute;
     top: 0; left: 0;
@@ -910,20 +1080,11 @@ input:focus {
     z-index: 2;
 }
 
-.diary-book:nth-child(4n+1) .diary-book-spine {
-    background: linear-gradient(to right, #7a6450, #b0977f);
-}
-.diary-book:nth-child(4n+2) .diary-book-spine {
-    background: linear-gradient(to right, #0d1a33, #1e3260);
-}
-.diary-book:nth-child(4n+3) .diary-book-spine {
-    background: linear-gradient(to right, #3a1018, #6d2932);
-}
-.diary-book:nth-child(4n+4) .diary-book-spine {
-    background: linear-gradient(to right, #141d12, #2f3d2c);
-}
+.diary-book:nth-child(4n+1) .diary-book-spine { background: linear-gradient(to right, #7a6450, #b0977f); }
+.diary-book:nth-child(4n+2) .diary-book-spine { background: linear-gradient(to right, #0d1a33, #1e3260); }
+.diary-book:nth-child(4n+3) .diary-book-spine { background: linear-gradient(to right, #3a1018, #6d2932); }
+.diary-book:nth-child(4n+4) .diary-book-spine { background: linear-gradient(to right, #141d12, #2f3d2c); }
 
-/* 척추 안쪽 하이라이트 */
 .diary-book-spine::after {
     content: "";
     position: absolute;
@@ -936,7 +1097,7 @@ input:focus {
         rgba(255,255,255,0.14) 100%);
 }
 
-/* ── 페이지 두께 (오른쪽 사이드) ── */
+/* ── 페이지 두께 ── */
 .diary-book-pages {
     position: absolute;
     top: 4px;
@@ -946,10 +1107,8 @@ input:focus {
     border-radius: 0 2px 2px 0;
     background: repeating-linear-gradient(
         180deg,
-        #e8ddd0 0px,
-        #e8ddd0 1px,
-        #d4c8bc 2px,
-        #e8ddd0 3px
+        #e8ddd0 0px, #e8ddd0 1px,
+        #d4c8bc 2px, #e8ddd0 3px
     );
     box-shadow: 2px 0 6px rgba(0,0,0,0.18);
     z-index: -1;
@@ -959,7 +1118,7 @@ input:focus {
 .diary-book-inner {
     position: absolute;
     inset: 0;
-    left: 14px; /* 척추 너비만큼 */
+    left: 14px;
     padding: 18px 12px 14px 10px;
     display: flex;
     flex-direction: column;
@@ -967,11 +1126,10 @@ input:focus {
     z-index: 1;
 }
 
-/* 날짜 – 세로쓰기 */
 .diary-book-date {
     writing-mode: vertical-rl;
     text-orientation: mixed;
-    font-size: 13px;
+    font-size: 20px;
     font-weight: 700;
     letter-spacing: 0.12em;
     color: rgba(255, 255, 255, 0.90);
@@ -983,7 +1141,6 @@ input:focus {
     line-height: 1.4;
 }
 
-/* 커버 중앙 장식선 */
 .diary-book-deco {
     width: 100%;
     height: 1px;
@@ -992,15 +1149,10 @@ input:focus {
     flex-shrink: 0;
 }
 
-.diary-book-title {
-    display: none;
-}
+.diary-book-title   { display: none; }
+.diary-book-preview { display: none; }
+.diary-book-badge   { display: none; }
 
-.diary-book-preview {
-    display: none;
-}
-
-/* ── 하단 푸터 (삭제 버튼) ── */
 .diary-book-footer {
     display: flex;
     align-items: center;
@@ -1008,10 +1160,6 @@ input:focus {
     padding-top: 8px;
     border-top: 1px solid rgba(255,255,255,0.14);
     flex-shrink: 0;
-}
-
-.diary-book-badge {
-    display: none;
 }
 
 .diary-book-delete {
@@ -1022,17 +1170,12 @@ input:focus {
     letter-spacing: 0.08em;
     cursor: pointer;
     padding: 2px 0;
-    transition: color 0.2s ease, opacity 0.2s ease;
+    transition: color 0.2s ease;
 }
 
-.diary-book-delete:hover {
-    color: rgba(255,255,255,0.95);
-}
-
+.diary-book-delete:hover        { color: rgba(255,255,255,0.95); }
 .diary-book:hover .diary-book-date,
-.diary-book:hover .diary-book-delete {
-    color: rgba(255,255,255,1);
-}
+.diary-book:hover .diary-book-delete { color: rgba(255,255,255,1); }
 
 /* ── 빈 책 슬롯 ── */
 .diary-empty-book {
@@ -1400,7 +1543,6 @@ input:focus {
     color: #E8D8C4;
 }
 
-.diary-side-select option:hover,
 .diary-side-select option:checked {
     background-color: #561C24;
     color: #E8D8C4;
