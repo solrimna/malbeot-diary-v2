@@ -43,9 +43,10 @@ async def create_diary(
             result = await db.execute(sa_select(Persona).where(Persona.id == diary.persona_id))
             persona = result.scalar_one_or_none()
 
-        await feedback_svc.create_feedback(
+       await feedback_svc.create_feedback(
             db=db,
             diary_id=diary.id,
+            user_id=current_user.id,
             persona_id=diary.persona_id,
             diary_content=diary.content,
             persona_name=persona.name if persona else "말벗",
