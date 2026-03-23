@@ -2,9 +2,16 @@ import logging
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
+
 from app.services.alarm_scheduler import start_scheduler, stop_scheduler
 from app.database import engine, Base
 from app.api.v1.router import api_router
+
+
+from app.database import engine, Base
+from app.api.alarms import router as alarms_router
+from app.services.alarm_scheduler import start_scheduler, stop_scheduler
+
 
 app = FastAPI()
 
@@ -12,6 +19,10 @@ app = FastAPI()
 async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+
+
+
     start_scheduler()
     yield
     stop_scheduler()
@@ -24,16 +35,19 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
 app.include_router(api_router, prefix="/api/v1")
 
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}
 
-# / (루트 경로)를 프론트엔드가 다 먹어버려 오류발생해 수정
-app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
-
+# / (루트 경로)를 프론트엔드가 다 먹어버려 오류발생 수정
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(name)s: %(message)s"
 )
+
+app.include_router(alarms_router)
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+
