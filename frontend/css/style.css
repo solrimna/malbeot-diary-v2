@@ -818,6 +818,94 @@ input:focus {
     min-height: auto;
 }
 
+.ai-toggle-card {
+    min-height: auto;
+}
+
+.ai-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.ai-toggle-label {
+    color: #E8D8C4;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.82;
+}
+
+.ai-toggle-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    background: transparent;
+    color: #E8D8C4;
+    cursor: pointer;
+    padding: 0;
+}
+
+.ai-toggle-track {
+    position: relative;
+    width: 50px;
+    height: 28px;
+    border-radius: 999px;
+    background: rgba(232, 216, 196, 0.22);
+    border: 1px solid rgba(232, 216, 196, 0.24);
+    transition: all 0.25s ease;
+}
+
+.ai-toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: #E8D8C4;
+    transition: transform 0.25s ease;
+}
+
+.ai-toggle-button.is-on .ai-toggle-track {
+    background: rgba(232, 216, 196, 0.34);
+}
+
+.ai-toggle-button.is-on .ai-toggle-thumb {
+    transform: translateX(21px);
+}
+
+.ai-toggle-state {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.ai-manual-summary-button {
+    margin-top: 16px;
+    width: 100%;
+    border: 1px solid rgba(232, 216, 196, 0.2);
+    border-radius: 16px;
+    background: rgba(232, 216, 196, 0.12);
+    color: #E8D8C4;
+    padding: 12px 16px;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.ai-manual-summary-button:hover {
+    background: rgba(232, 216, 196, 0.18);
+}
+
+.hidden {
+    display: none;
+}
+
 .diary-side-label {
     color: rgba(232, 216, 196, 0.82);
 }

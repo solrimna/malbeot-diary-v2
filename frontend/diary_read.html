@@ -48,32 +48,33 @@
                         <div class="diary-meta-grid">
                             <div>
                                 <label class="diary-detail-label">날짜</label>
-                                <div id="diary-read-date" class="diary-detail-input">-</div>
+                                <input id="diary-read-date" type="date" class="diary-detail-input" readonly>
                             </div>
 
                             <div>
                                 <label class="diary-detail-label">오늘의 감정</label>
-                                <div id="diary-read-emotion" class="diary-detail-input">-</div>
+                                <input id="diary-read-emotion" type="text" class="diary-detail-input" readonly>
                             </div>
 
                             <div>
                                 <label class="diary-detail-label">날씨</label>
-                                <div id="diary-read-weather" class="diary-detail-input">-</div>
+                                <input id="diary-read-weather" type="text" class="diary-detail-input" readonly>
                             </div>
                         </div>
 
                         <div>
                             <label class="diary-detail-label">제목</label>
-                            <div id="diary-read-title" class="diary-detail-input">-</div>
+                            <input id="diary-read-title" type="text" class="diary-detail-input" readonly>
                         </div>
 
                         <div>
                             <label class="diary-detail-label">일기 내용</label>
-                            <div id="diary-read-content" class="diary-detail-textarea">-</div>
+                            <textarea id="diary-read-content" class="diary-detail-textarea" readonly></textarea>
                         </div>
 
                         <div class="flex flex-col sm:flex-row gap-3 pt-2">
                             <a href="my-diary.html" class="cancel-btn inline-flex items-center justify-center">목록으로</a>
+                            <button id="diary-edit-button" type="button" class="save-btn">수정하기</button>
                             <button id="diary-delete-button" type="button" class="delete-btn">삭제하기</button>
                         </div>
                     </div>
@@ -91,8 +92,16 @@
                     <div class="space-y-5">
                         <div class="ai-preview-card diary-side-select-card">
                             <label class="diary-detail-label diary-side-label">페르소나</label>
-                            <div id="diary-read-persona" class="diary-detail-input diary-side-select">-</div>
+                            <select id="diary-read-persona-select" class="diary-detail-select diary-side-select" disabled>
+                                <option value="" selected> </option>
+                                <option>다정한 담임선생님</option>
+                                <option>친한 친구</option>
+                                <option>차분한 상담가</option>
+                                <option>따뜻한 언니</option>
+                            </select>
                         </div>
+
+                        <button id="ai-reroll-summary-button" type="button" class="ai-manual-summary-button">다시 요약하기</button>
 
                         <div class="ai-preview-card">
                             <div class="ai-preview-title">AI 요약</div>
