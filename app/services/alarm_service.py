@@ -1,60 +1,9 @@
 from datetime import datetime
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.alarm import Alarm
-from app.schemas.alarm import AlarmCreate, AlarmUpdate
-
-TEMP_USER_ID = 1
-
-
-async def create_alarm(db: AsyncSession, payload: AlarmCreate):
-    alarm = Alarm(
-        user_id=TEMP_USER_ID,
-        alarm_time=payload.alarm_time,
-        repeat_days=payload.repeat_days,
-        is_enabled=True,
-    )
-    db.add(alarm)
-    await db.commit()
-    await db.refresh(alarm)
-    return alarm
-
-
-async def get_my_alarms(db: AsyncSession):
-    result = await db.execute(
-        select(Alarm)
-        .where(Alarm.user_id == TEMP_USER_ID)
-        .order_by(Alarm.id.desc())
-    )
-    return result.scalars().all()
-
-
-async def update_alarm(db: AsyncSession, alarm_id: int, payload: AlarmUpdate):
-    result = await db.execute(
-        select(Alarm).where(
-            Alarm.id == alarm_id,
-            Alarm.user_id == TEMP_USER_ID,
-        )
-    )
-    alarm = result.scalar_one_or_none()
-
-    if not alarm:
-        return None
-
-    if payload.alarm_time is not None:
-        alarm.alarm_time = payload.alarm_time
-
-    if payload.repeat_days is not None:
-        alarm.repeat_days = payload.repeat_days
-
-    if payload.is_enabled is not None:
-        alarm.is_enabled = payload.is_enabled
-
-    await db.commit()
-    await db.refresh(alarm)
-    return alarm
+from app.config import TEMP_USER_ID
 
 
 async def get_due_alarms(db: AsyncSession):
@@ -67,7 +16,7 @@ async def get_due_alarms(db: AsyncSession):
     result = await db.execute(
         select(Alarm).where(
             Alarm.user_id == TEMP_USER_ID,
-            Alarm.is_enabled == True,
+            Alarm.is_enabled.is_(True),
         )
     )
     alarms = result.scalars().all()
@@ -75,19 +24,33 @@ async def get_due_alarms(db: AsyncSession):
     due_alarms = []
 
     for alarm in alarms:
-        alarm_time_str = alarm.alarm_time.strftime("%H:%M")
-        repeat_days_list = [day.strip() for day in alarm.repeat_days.split(",")]
+        # 알람 시간이 없으면 건너뛰기
+        if not alarm.alarm_time:
+            continue
 
+        # 반복 요일이 없으면 건너뛰기
+        if not alarm.repeat_days:
+            continue
+
+        alarm_time_str = alarm.alarm_time.strftime("%H:%M")
+        repeat_days_list = [
+            day.strip() for day in alarm.repeat_days.split(",") if day.strip()
+        ]
+
+        # 현재 시간과 알람 시간이 다르면 건너뛰기
         if alarm_time_str != current_time:
             continue
 
+        # 오늘 요일이 반복 요일에 없으면 건너뛰기
         if today not in repeat_days_list:
             continue
 
+        # 같은 분에 이미 실행됐으면 중복 실행 방지
         if alarm.last_triggered_at:
-            last_triggered = alarm.last_triggered_at.strftime("%Y-%m-%d %H:%M")
-            now_key = now.strftime("%Y-%m-%d %H:%M")
-            if last_triggered == now_key:
+            last_triggered = alarm.last_triggered_at.replace(second=0, microsecond=0)
+            current_minute = now.replace(second=0, microsecond=0)
+
+            if last_triggered == current_minute:
                 continue
 
         due_alarms.append(alarm)
@@ -95,8 +58,26 @@ async def get_due_alarms(db: AsyncSession):
     return due_alarms
 
 
-async def mark_alarm_triggered(db: AsyncSession, alarm: Alarm):
+async def trigger_alarm(db: AsyncSession, alarm: Alarm):
+    """
+    알람 1개를 실제로 실행하는 함수
+    여기서 알림 전송, 메시지 생성, 일기 생성 같은 동작을 넣으면 됨
+    """
+    print(f"[ALARM TRIGGERED] id={alarm.id}, time={alarm.alarm_time}")
+
+    # 마지막 실행 시각 갱신
     alarm.last_triggered_at = datetime.now()
+
+    db.add(alarm)
     await db.commit()
     await db.refresh(alarm)
-    return alarm
+
+
+async def process_due_alarms(db: AsyncSession):
+    """
+    지금 울려야 하는 알람들을 찾아서 하나씩 실행
+    """
+    due_alarms = await get_due_alarms(db)
+
+    for alarm in due_alarms:
+        await trigger_alarm(db, alarm)

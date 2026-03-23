@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     # OpenAI
     OPENAI_API_KEY: str = ""
 
-    # Google Cloud STT/TTS (나 담당)
+    # Google Cloud STT/TTS
     GOOGLE_APPLICATION_CREDENTIALS: str = "./credentials/google-service-account.json"
 
     class Config:
@@ -29,3 +29,6 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+TEMP_USER_ID = 1
