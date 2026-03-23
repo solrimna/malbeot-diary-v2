@@ -82,6 +82,7 @@ async def create_feedback(
     feedback = await feedback_svc.create_feedback(
         db=db,
         diary_id=diary_id,
+        user_id=current_user.id,
         persona_id=diary.persona_id,
         diary_content=diary.content,
         persona_name=persona_name,
