@@ -109,6 +109,7 @@
                             </select>
                         </div>
 
+                        <!-- AI 자동요약 / AI 요약 카드: UI 담당자 확인 후 반영 예정
                         <div class="ai-preview-card ai-toggle-card">
                             <div class="ai-toggle-row">
                                 <span class="ai-toggle-label">AI 자동요약</span>
@@ -127,10 +128,23 @@
                             <div class="ai-preview-body">
                             </div>
                         </div>
+                        -->
+
+                        <div class="ai-preview-card ai-toggle-card">
+                            <div class="ai-toggle-row">
+                                <span class="ai-toggle-label">AI 자동 재생</span>
+                                <button id="ai-autoplay-toggle" type="button" class="ai-toggle-button is-on" aria-pressed="true">
+                                    <span class="ai-toggle-track">
+                                        <span class="ai-toggle-thumb"></span>
+                                    </span>
+                                    <span id="ai-autoplay-state" class="ai-toggle-state">ON</span>
+                                </button>
+                            </div>
+                        </div>
 
                         <div class="ai-preview-card">
                             <div class="ai-preview-title">AI 한마디</div>
-                            <div class="ai-preview-body">
+                            <div class="ai-preview-body" id="ai-comment-body">
                             </div>
                         </div>
                     </div>
