@@ -33,4 +33,3 @@ def get_settings() -> Settings:
     return Settings()
 
 
-TEMP_USER_ID = 1

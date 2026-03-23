@@ -576,3 +576,74 @@ window.addEventListener("DOMContentLoaded", () => {
 
     renderDiaryProgress();
 });
+async function requestAlarmNotificationPermission() {
+  if (!("Notification" in window)) return;
+
+  if (Notification.permission === "default") {
+    try {
+      await Notification.requestPermission();
+    } catch (error) {
+      console.error("알림 권한 요청 실패:", error);
+    }
+  }
+}
+
+function getAccessToken() {
+  return localStorage.getItem("access_token");
+}
+
+const shownAlarmMap = new Map();
+
+function showAlarmNotification(alarm) {
+  if (!("Notification" in window)) return;
+  if (Notification.permission !== "granted") return;
+
+  const now = Date.now();
+  const lastShownAt = shownAlarmMap.get(alarm.id);
+
+  if (lastShownAt && now - lastShownAt < 60000) {
+    return;
+  }
+
+  shownAlarmMap.set(alarm.id, now);
+
+  new Notification("말벗 알람", {
+    body: `설정한 알람 시간입니다. (${alarm.alarm_time})`
+  });
+}
+
+async function checkDueAlarmsForNotification() {
+  const token = getAccessToken();
+  if (!token) return;
+
+  try {
+    const response = await fetch("/api/v1/alarms/alarms/due", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/json"
+      }
+    });
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+    if (!data.items || data.items.length === 0) return;
+
+    data.items.forEach((alarm) => {
+      showAlarmNotification(alarm);
+    });
+  } catch (error) {
+    console.error("due 알람 조회 실패:", error);
+  }
+}
+
+window.addEventListener("DOMContentLoaded", async () => {
+  await requestAlarmNotificationPermission();
+
+  await checkDueAlarmsForNotification();
+
+  setInterval(() => {
+    checkDueAlarmsForNotification();
+  }, 30000);
+});

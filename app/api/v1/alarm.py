@@ -1,9 +1,10 @@
 from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import TEMP_USER_ID
+from app.core.security import get_current_user
 from app.database import get_db
 from app.models.alarm import Alarm
 from app.schemas.alarm import AlarmCreate, AlarmResponse
@@ -13,17 +14,23 @@ router = APIRouter(prefix="/alarms", tags=["alarms"])
 
 
 @router.get("/", response_model=list[AlarmResponse])
-async def read_alarms(db: AsyncSession = Depends(get_db)):
+async def read_alarms(
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
     result = await db.execute(
-        select(Alarm).where(Alarm.user_id == TEMP_USER_ID)
+        select(Alarm).where(Alarm.user_id == str(current_user.id))
     )
     alarms = result.scalars().all()
     return alarms
 
 
 @router.get("/due")
-async def read_due_alarms(db: AsyncSession = Depends(get_db)):
-    due_alarms = await get_due_alarms(db)
+async def read_due_alarms(
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    due_alarms = await get_due_alarms(db, str(current_user.id))
 
     return {
         "count": len(due_alarms),
@@ -49,10 +56,11 @@ async def test_due_alarms(
     time: str = Query(..., description="테스트 시간. 예: 11:40"),
     day: str = Query(..., description="테스트 요일. 예: MON, TUE, WED"),
     db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
 ):
     result = await db.execute(
         select(Alarm).where(
-            Alarm.user_id == TEMP_USER_ID,
+            Alarm.user_id == str(current_user.id),
             Alarm.is_enabled.is_(True),
         )
     )
@@ -106,11 +114,14 @@ async def test_due_alarms(
 async def create_alarm(
     alarm_data: AlarmCreate,
     db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
 ):
+    repeat_days_str = ",".join(alarm_data.repeat_days) if alarm_data.repeat_days else None
+
     new_alarm = Alarm(
-        user_id=TEMP_USER_ID,
+        user_id=str(current_user.id),
         alarm_time=alarm_data.alarm_time,
-        repeat_days=alarm_data.repeat_days,
+        repeat_days=repeat_days_str,
         is_enabled=alarm_data.is_enabled,
     )
 

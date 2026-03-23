@@ -3,10 +3,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.alarm import Alarm
-from app.config import TEMP_USER_ID
 
 
-async def get_due_alarms(db: AsyncSession):
+async def get_due_alarms(db: AsyncSession, user_id):
     now = datetime.now()
     current_time = now.strftime("%H:%M")
 
@@ -15,7 +14,7 @@ async def get_due_alarms(db: AsyncSession):
 
     result = await db.execute(
         select(Alarm).where(
-            Alarm.user_id == TEMP_USER_ID,
+           Alarm.user_id == user_id,
             Alarm.is_enabled.is_(True),
         )
     )
