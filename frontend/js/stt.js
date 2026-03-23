@@ -54,7 +54,13 @@ const stt = (() => {
 
     // ── Azure WebSocket STT ──
     async function startAzure() {
-        ws = new WebSocket("ws://localhost:8000/api/v1/voice/ws/stt");
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            setStatus("로그인이 필요해요.");
+            setRecordingState(false);
+            return;
+        }
+        ws = new WebSocket(`ws://localhost:8000/api/v1/voice/ws/stt?token=${encodeURIComponent(token)}`);
 
         ws.onopen = () => console.log("STT WebSocket 연결됨");
         ws.onmessage = (e) => {

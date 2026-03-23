@@ -3,9 +3,9 @@
 # (O): POST /tts         - 텍스트 → 음성 파일 (OpenAI TTS)  
 # (O): POST /tts/stream  - GPT 응답 스트리밍 → TTS 파이프라인
 
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Query
 from fastapi.responses import StreamingResponse, Response
-from fastapi import WebSocket, WebSocketDisconnect  # azure websocket 통신을 위해 추가 
+from fastapi import WebSocket, WebSocketDisconnect  # azure websocket 통신을 위해 추가
 import asyncio                                      # azure websocket 통신을 위해 추가 
 from pydantic import BaseModel
 from app.services.stt_service import stt_service
@@ -13,6 +13,7 @@ from app.services.tts_service import tts_service
 from app.services.gpt_service import gpt_service
 from app.services.redis_service import get_tts_stats
 from app.config import get_settings
+from app.core.security import decode_access_token
 import logging
 
 settings = get_settings()
@@ -95,7 +96,11 @@ async def tts_cache_stats():
 
 # ── WebSocket STT: 실시간 스트리밍 ───────────────────────
 @router.websocket("/ws/stt")
-async def websocket_stt(websocket: WebSocket):
+async def websocket_stt(websocket: WebSocket, token: str = Query(...)):
+    if not decode_access_token(token):
+        await websocket.close(code=4001)
+        return
+
     await websocket.accept()
     logger.info("WebSocket STT 연결됨")
 
