@@ -82,7 +82,7 @@ function addPersona() {
     const expression = expressionInput.value.trim();
 
     if (!name || !summary || !tone || !style || !expression) {
-        alert("\uBAA8\uB4E0 \uD56D\uBAA9\uC744 \uC785\uB825\uD574\uC8FC\uC138\uC694.");
+        alert("모든 항목을 입력해주세요.");
         return;
     }
 
@@ -100,7 +100,7 @@ function addPersona() {
                 <div class="persona-card-title">${escapeHtml(name)}</div>
                 <div class="persona-card-summary">${escapeHtml(summary)}</div>
             </div>
-            <button type="button" class="persona-delete-btn" onclick="deletePersona(this)">\uC0AD\uC81C</button>
+            <button type="button" class="persona-delete-btn" onclick="deletePersona(this)">삭제</button>
         </div>
 
         <div class="mb-4">
@@ -109,17 +109,17 @@ function addPersona() {
 
         <div class="persona-meta">
             <div class="persona-meta-item">
-                <span class="persona-meta-label">\uB9D0\uD22C / \uBD84\uC704\uAE30</span>
+                <span class="persona-meta-label">말투 / 분위기</span>
                 <div class="persona-meta-value">${escapeHtml(tone)}</div>
             </div>
 
             <div class="persona-meta-item">
-                <span class="persona-meta-label">AI \uBC18\uC751 \uC2A4\uD0C0\uC77C</span>
+                <span class="persona-meta-label">AI 반응 스타일</span>
                 <div class="persona-meta-value">${escapeHtml(style).replace(/\n/g, "<br>")}</div>
             </div>
 
             <div class="persona-meta-item">
-                <span class="persona-meta-label">\uC790\uC8FC \uC4F0\uB294 \uD45C\uD604</span>
+                <span class="persona-meta-label">자주 쓰는 표현</span>
                 <div class="persona-meta-value">${escapeHtml(expression).replace(/\n/g, "<br>")}</div>
             </div>
         </div>
@@ -148,8 +148,8 @@ function deletePersona(button) {
     if (cards.length === 0) {
         personaList.innerHTML = `
             <div class="persona-empty">
-                \uC544\uC9C1 \uB9CC\uB4E0 \uD398\uB974\uC18C\uB098\uAC00 \uC5C6\uC5B4\uC694.<br>
-                \uC67C\uCABD\uC5D0\uC11C \uCCAB \uBC88\uC9F8 \uD398\uB974\uC18C\uB098\uB97C \uB9CC\uB4E4\uC5B4\uBCF4\uC138\uC694.
+                아직 만든 페르소나가 없어요.<br>
+                왼쪽에서 첫 번째 페르소나를 만들어보세요.
             </div>
         `;
     }
@@ -198,7 +198,7 @@ function saveDiaryEntry() {
     const content = contentInput.value.trim();
 
     if (!date || !title || !content) {
-        alert("\uB0A0\uC9DC, \uC81C\uBAA9, \uC77C\uAE30 \uB0B4\uC6A9\uC744 \uBAA8\uB450 \uC785\uB825\uD574\uC8FC\uC138\uC694.");
+        alert("날짜, 제목, 일기 내용을 모두 입력해주세요.");
         return;
     }
 
@@ -215,7 +215,7 @@ function saveDiaryEntry() {
             <div class="diary-book-title">${escapeHtml(title)}</div>
 
             <div class="diary-book-footer">
-                <button type="button" class="diary-book-delete" onclick="deleteDiaryBook(this)">\uC0AD\uC81C</button>
+                <button type="button" class="diary-book-delete" onclick="deleteDiaryBook(this)">삭제</button>
             </div>
         </div>
     `;
@@ -233,7 +233,7 @@ function saveDiaryEntry() {
 }
 
 function deleteDiaryBook(button) {
-    if (!confirm("\uC0AD\uC81C\uD558\uC2DC\uACA0\uC2B5\uB2C8\uAE4C?")) {
+    if (!confirm("삭제하시겠습니까?")) {
         return;
     }
 
@@ -248,8 +248,8 @@ function deleteDiaryBook(button) {
     if (remainingBooks.length === 0) {
         shelf.innerHTML = `
             <div class="diary-empty-book" id="diary-empty-state">
-                \uC544\uC9C1 \uC800\uC7A5\uB41C \uC77C\uAE30\uAC00 \uC5C6\uC5B4\uC694.<br>
-                \uCCAB \uBC88\uC9F8 \uD558\uB8E8\uB97C \uCC45\uC73C\uB85C \uB9CC\uB4E4\uC5B4\uBCF4\uC138\uC694.
+                아직 저장된 일기가 없어요.<br>
+                첫 번째 하루를 책으로 만들어보세요.
             </div>
         `;
         diaryShelfIndex = 0;
@@ -331,13 +331,13 @@ function fakeDiarySearch() {
     const keyword = input.value.trim();
 
     if (!keyword) {
-        alert("\uAC80\uC0C9\uD558\uACE0 \uC2F6\uC740 \uB0B4\uC6A9\uC744 \uC785\uB825\uD574\uC8FC\uC138\uC694.");
+        alert("검색하고 싶은 내용을 입력해주세요.");
         return;
     }
 
     result.innerHTML = `
-        "${escapeHtml(keyword)}" \uACFC \uAD00\uB828\uD55C \uC77C\uAE30\uB97C \uCC3E\uB294 AI \uAC80\uC0C9 \uAE30\uB2A5\uC774 \uB4E4\uC5B4\uAC08 \uC790\uB9AC\uC608\uC694.<br>
-        \uC9C0\uAE08\uC740 UI\uB9CC \uB9CC\uB4E0 \uC0C1\uD0DC\uC774\uACE0, \uB098\uC911\uC5D0 \uD0A4\uC6CC\uB4DC \uC77C\uCE58 \uC77C\uAE30 \uB0B4\uC6A9\uC774\uB098 \uD574\uB2F9 \uB0A0\uC9DC\uB97C \uCC3E\uC544\uC8FC\uB294 \uAE30\uB2A5\uC73C\uB85C \uC5F0\uACB0\uD558\uBA74 \uC88B\uC544\uC694.
+        "${escapeHtml(keyword)}"과 관련한 일기를 찾는 AI 검색 기능이 들어갈 자리예요.<br>
+        지금은 UI만 만든 상태이고, 나중에 키워드 일치 일기 내용이나 해당 날짜를 찾아주는 기능으로 연결하면 좋아요.
     `;
 }
 
@@ -367,7 +367,7 @@ function renderProfileCalendar() {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
 
-    title.textContent = `${year}\uB144 ${month + 1}\uC6D4`;
+    title.textContent = `${year}년 ${month + 1}월`;
     grid.innerHTML = "";
 
     for (let i = 0; i < firstDay.getDay(); i++) {
@@ -385,7 +385,7 @@ function renderProfileCalendar() {
         cell.className = `profile-calendar-cell${hasDiary ? " has-diary" : ""}`;
         cell.innerHTML = `
             <span class="profile-calendar-day">${day}</span>
-            ${hasDiary ? '<span class="profile-calendar-mark">\uC791\uC131 \uC644\uB8CC</span>' : ""}
+            ${hasDiary ? '<span class="profile-calendar-mark">작성 완료</span>' : ""}
         `;
 
         grid.appendChild(cell);
