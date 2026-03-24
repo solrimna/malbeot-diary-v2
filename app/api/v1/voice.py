@@ -3,17 +3,17 @@
 # (O): POST /tts         - 텍스트 → 음성 파일 (OpenAI TTS)  
 # (O): POST /tts/stream  - GPT 응답 스트리밍 → TTS 파이프라인
 
-from fastapi import APIRouter, UploadFile, File, HTTPException, Query
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Query
 from fastapi.responses import StreamingResponse, Response
 from fastapi import WebSocket, WebSocketDisconnect  # azure websocket 통신을 위해 추가
-import asyncio                                      # azure websocket 통신을 위해 추가 
+import asyncio                                      # 비동기 이벤트 루프 처리를 위해 추가
 from pydantic import BaseModel
 from app.services.stt_service import stt_service
 from app.services.tts_service import tts_service
 from app.services.gpt_service import gpt_service
 from app.services.redis_service import get_tts_stats
 from app.config import get_settings
-from app.core.security import decode_access_token
+from app.core.security import decode_access_token, get_current_user
 import logging
 
 settings = get_settings()
@@ -38,7 +38,7 @@ class StreamFeedbackRequest(BaseModel):
 
 # ── STT: 음성 → 텍스트 ───────────────────────────────────
 @router.post("/stt", response_model=STTResponse)
-async def speech_to_text(file: UploadFile = File(...)):
+async def speech_to_text(file: UploadFile = File(...), current_user=Depends(get_current_user)):
     # 지원 포맷 확인
     allowed = {"audio/webm", "audio/wav", "audio/mp4", "audio/mpeg"}
     if file.content_type not in allowed:
@@ -53,7 +53,7 @@ async def speech_to_text(file: UploadFile = File(...)):
 
 # ── TTS: 텍스트 → 음성 ───────────────────────────────────
 @router.post("/tts")
-async def text_to_speech(request: TTSRequest):
+async def text_to_speech(request: TTSRequest, current_user=Depends(get_current_user)):
     if not request.text.strip():
         raise HTTPException(status_code=400, detail="텍스트가 비어있어요")
 
@@ -67,7 +67,7 @@ async def text_to_speech(request: TTSRequest):
 
 # ── TTS Stream: GPT 스트리밍 → TTS 파이프라인 ────────────
 @router.post("/tts/stream")
-async def stream_feedback_tts(request: StreamFeedbackRequest):
+async def stream_feedback_tts(request: StreamFeedbackRequest, current_user=Depends(get_current_user)):
     if not request.diary_content.strip():
         raise HTTPException(status_code=400, detail="일기 내용이 비어있어요")
 
@@ -88,7 +88,7 @@ async def stream_feedback_tts(request: StreamFeedbackRequest):
 
 # ── TTS 캐시 통계 ─────────────────────────────────────────
 @router.get("/tts/stats")
-async def tts_cache_stats():
+async def tts_cache_stats(current_user=Depends(get_current_user)):
     if not settings.USE_REDIS:
         return {"message": "Redis 비활성화 상태 (USE_REDIS=False)"}
     return await get_tts_stats()
