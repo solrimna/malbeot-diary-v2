@@ -20,8 +20,15 @@ class Settings(BaseSettings):
 
     # Azure Speech
     AZURE_SPEECH_KEY: str = ""
-    AZURE_SPEECH_REGION: str = "koreacentral" 
-   
+    AZURE_SPEECH_REGION: str = "koreacentral"
+
+    # Web Push
+    VAPID_PUBLIC_KEY: str = ""
+    VAPID_PRIVATE_KEY: str = ""
+    VAPID_CLAIMS_SUB: str = "mailto:test@example.com"
+
+    # Alarm
+    ALARM_CHECK_INTERVAL_SECONDS: int = 30
 
     class Config:
         env_file = ".env"
@@ -31,6 +38,3 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-
-
-TEMP_USER_ID = 1
