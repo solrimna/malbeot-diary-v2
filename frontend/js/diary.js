@@ -399,7 +399,7 @@ async function initDiaryReadPage() {
                     contentEl.value = updatedDiary.content || "";
                     await populatePersonaSelect(personaSelect, updatedDiary.persona_id || "");
 
-                    isEditing = false;
+           isEditing = false;
                     setDiaryReadOnly(fields, true);
                     const voiceBtnWrapper = document.getElementById("voice-btn-wrapper");
                     if (voiceBtnWrapper) voiceBtnWrapper.classList.add("hidden");
@@ -407,6 +407,20 @@ async function initDiaryReadPage() {
                         personaSelect.disabled = true;
                     }
                     editButton.textContent = "수정하기";
+
+                    // 일기 수정 후 AI 피드백 자동 갱신
+                    try {
+                        const updatedFeedback = await apiRequest(
+                            `/feedback/${encodeURIComponent(diaryId)}`,
+                            { method: "GET" }
+                        );
+                        const reviewEl = document.getElementById("diary-read-review");
+                        if (reviewEl && updatedFeedback.feedback_text) {
+                            reviewEl.textContent = updatedFeedback.feedback_text;
+                        }
+                    } catch (_) {
+                        // 피드백 갱신 실패해도 수정은 성공으로 처리
+                    }
                 } catch (error) {
                     window.alert(error.message || "일기 수정에 실패했어요.");
                     editButton.textContent = "저장";
