@@ -183,7 +183,6 @@ async function handleDiaryCreateSubmit(event) {
             hashtags: [],
             persona_id: personaSelect?.value || null,
         });
-        // window.location.href = `diary_read.html?id=${encodeURIComponent(diary.id)}`;
         const autoplay = document.getElementById("ai-autoplay-toggle")?.classList.contains("is-on") ? "1" : "0";
         window.location.href = `diary_read.html?id=${encodeURIComponent(diary.id)}&autoplay=${autoplay}`;
 
@@ -206,9 +205,6 @@ function initDiaryListPage() {
 
 function initDiaryDetailPage() {
     const form = document.getElementById("diary-create-form");
-    // const autoSummaryToggle = document.getElementById("ai-auto-summary-toggle");
-    // const autoSummaryState = document.getElementById("ai-auto-summary-state");
-    // const manualSummaryButton = document.getElementById("ai-manual-summary-button");
     const personaSelect = document.getElementById("diary-persona-select");
 
     if (!form) {
@@ -223,16 +219,6 @@ function initDiaryDetailPage() {
     populatePersonaSelect(personaSelect);
 
     populatePersonaSelect(personaSelect);
-
-    // if (autoSummaryToggle && autoSummaryState && manualSummaryButton) {
-    //     autoSummaryToggle.addEventListener("click", () => {
-    //         const isOn = autoSummaryToggle.classList.contains("is-on");
-    //         autoSummaryToggle.classList.toggle("is-on", !isOn);
-    //         autoSummaryToggle.setAttribute("aria-pressed", String(!isOn));
-    //         autoSummaryState.textContent = isOn ? "OFF" : "ON";
-    //         manualSummaryButton.classList.toggle("hidden", !isOn);
-    //     });
-    // }
 
     const autoplayToggle = document.getElementById("ai-autoplay-toggle");
     const autoplayState = document.getElementById("ai-autoplay-state");
@@ -302,6 +288,7 @@ async function initDiaryReadPage() {
             }
 
             async function playTTS() {
+                //console.log("[TTS 호출 텍스트]", reviewEl.textContent);
                 ttsButton.disabled = true;
                 ttsButton.textContent = "생성 중...";
                 try {
@@ -312,7 +299,7 @@ async function initDiaryReadPage() {
                             "Content-Type": "application/json",
                             ...(token ? { Authorization: `Bearer ${token}` } : {}),
                         },
-                        body: JSON.stringify({ text: feedback.feedback_text }),
+                        body: JSON.stringify({ text: reviewEl.textContent }),
                     });
                     if (ttsResponse.ok) {
                         const audioBlob = await ttsResponse.blob();
@@ -416,6 +403,7 @@ async function initDiaryReadPage() {
                         );
                         const reviewEl = document.getElementById("diary-read-review");
                         if (reviewEl && updatedFeedback.feedback_text) {
+                            //console.log("[수정 후 새 피드백]", updatedFeedback.feedback_text);
                             reviewEl.textContent = updatedFeedback.feedback_text;
                         }
                     } catch (_) {
