@@ -248,7 +248,7 @@ function renderDiaryProgress() {
     });
 }
 
-async function fakeDiarySearch() {
+async function DiarySearch() {
     const input = document.getElementById("diary-search-input");
     const result = document.getElementById("diary-search-result");
     const searchButton = document.getElementById("diary-search-button");

@@ -47,11 +47,22 @@ async def create_persona(
             detail="custom 타입은 custom_description이 필요합니다."
         )
 
+    # 기존 active 페르소나 모두 비활성화
+    stmt_deactivate = select(Persona).where(
+        Persona.user_id == current_user.id,
+        Persona.is_active == True,
+    )
+    result_deactivate = await db.execute(stmt_deactivate)
+    existing_personas = result_deactivate.scalars().all()
+    for p in existing_personas:
+        p.is_active = False
+
     persona = Persona(
         user_id=current_user.id,
         name=body.name,
         preset_type=body.preset_type,
         custom_description=body.custom_description,
+        is_active=True,
     )
     db.add(persona)
     await db.commit()
@@ -85,6 +96,16 @@ async def update_persona(
     if body.custom_description is not None:
         persona.custom_description = body.custom_description
     if body.is_active is not None:
+        if body.is_active:
+            # 다른 페르소나 모두 비활성화
+            stmt_deactivate = select(Persona).where(
+                Persona.user_id == current_user.id,
+                Persona.is_active == True,
+                Persona.id != persona_id,
+            )
+            result_deactivate = await db.execute(stmt_deactivate)
+            for p in result_deactivate.scalars().all():
+                p.is_active = False
         persona.is_active = body.is_active
 
     await db.commit()
