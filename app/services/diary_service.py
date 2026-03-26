@@ -107,6 +107,8 @@ class DiaryService:
             diary.content = data.content
         if data.diary_date is not None:
             diary.diary_date = data.diary_date
+        if data.persona_id is not None:
+            diary.persona_id = data.persona_id
 
         await db.commit()
         await db.refresh(diary)

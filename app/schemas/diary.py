@@ -24,6 +24,7 @@ class DiaryUpdate(BaseModel):
     weather: Optional[str] = Field(None, max_length=100)
     content: Optional[str] = None
     diary_date: Optional[date] = None
+    persona_id: Optional[uuid.UUID] = None
 
 
 # ── API가 응답할 때 보내는 데이터 ────────────────

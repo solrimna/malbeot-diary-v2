@@ -88,6 +88,7 @@ async def update_diary(
     if not diary:
         raise HTTPException(status_code=404, detail="일기를 찾을 수 없습니다.")
     original_content = diary.content
+    original_persona_id = diary.persona_id
     updated_diary = await diary_svc.update_diary(db, diary, body)
 
     # 일기 수정 후 AI 피드백 자동 갱신
@@ -99,19 +100,21 @@ async def update_diary(
             result = await db.execute(sa_select(Persona).where(Persona.id == updated_diary.persona_id))
             persona = result.scalar_one_or_none()
 
-        # logger.info(f"수정 전 content: {original_content}")
-        # logger.info(f"수정 후 content: {body.content}")
+#        logger.info(f"수정 전 : {original_persona_id}")
+#        logger.info(f"수정 후 : {updated_diary.persona_id}")
         
-        # 기존 일기 내용과 실제로 달라졌을 때만 피드백 재생성
-        if body.content is not None and body.content != original_content:
-            #logger.info(f"달라진거 피드백 재생성 시도")
+        # 일기 내용 또는 페르소나가 변경된 경우에만 피드백 재생성
+        content_changed = body.content is not None and body.content != original_content
+        persona_changed = updated_diary.persona_id is not None and updated_diary.persona_id != original_persona_id
+        if content_changed or persona_changed:
+ #           logger.info(f"달라진거 피드백 재생성 시도")
             existing = await feedback_svc.get_feedback(db, diary_id)
             if existing:
                 await db.delete(existing)
                 await db.commit()
         else:
-            #logger.info(f"피드백 재생성 시도안함")
-            return updated_diary  # 내용 변경 없으면 피드백 재생성 안 함
+#            logger.info(f"피드백 재생성 시도안함")
+            return updated_diary  # 변경 없으면 피드백 재생성 안 함
 
         # 새 피드백 생성
         await feedback_svc.create_feedback(

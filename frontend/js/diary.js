@@ -81,7 +81,7 @@ async function deleteDiary(diaryId) {
     });
 }
 
-async function populatePersonaSelect(selectElement, selectedPersonaId = "") {
+async function populatePersonaSelect(selectElement, selectedPersonaId = "", useActiveAsDefault = false) {
     if (!selectElement) {
         return;
     }
@@ -96,6 +96,8 @@ async function populatePersonaSelect(selectElement, selectedPersonaId = "") {
             option.textContent = persona.name;
 
             if (selectedPersonaId && persona.id === selectedPersonaId) {
+                option.selected = true;
+            } else if (!selectedPersonaId && useActiveAsDefault && persona.is_active) {
                 option.selected = true;
             }
 
@@ -216,8 +218,7 @@ function initDiaryDetailPage() {
         dateInput.value = new Date().toISOString().slice(0, 10);
     }
 
-    populatePersonaSelect(personaSelect);
-    populatePersonaSelect(personaSelect);
+    populatePersonaSelect(personaSelect, "", true);
 
     const autoplayToggle = document.getElementById("ai-autoplay-toggle");
     const autoplayState = document.getElementById("ai-autoplay-state");
@@ -274,14 +275,14 @@ async function initDiaryReadPage() {
         await populatePersonaSelect(personaSelect, diary.persona_id || "");
         setDiaryReadOnly(fields, true);
 
-// --- 여기부터 수정한 코드 ---
+        // --- 여기부터 수정한 코드 ---
         if (personaSelect && !diary.persona_id) {
             const defaultOption = personaSelect.querySelector('option[value=""]');
             if (defaultOption) {
                 defaultOption.textContent = "기본 말벗";
             }
         }
-// --- 여기까지 수정한 코드 ---
+        // --- 여기까지 수정한 코드 ---
 
         // 피드백 조회 + TTS 버튼 연결
         try {
