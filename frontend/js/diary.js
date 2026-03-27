@@ -61,6 +61,25 @@ async function fetchDiary(diaryId) {
     return apiRequest(`/diaries/${encodeURIComponent(diaryId)}`, { method: "GET" });
 }
 
+async function fetchDiaryHashtags(diaryId) {
+    return apiRequest(`/diaries/${encodeURIComponent(diaryId)}/hashtags`, { method: "GET" });
+}
+
+function renderHashtags(hashtags) {
+    const wrapper = document.getElementById("diary-hashtag-wrapper");
+    if (!wrapper) return;
+
+    wrapper.innerHTML = "";
+    if (!hashtags || !hashtags.length) return;
+
+    hashtags.forEach((tag) => {
+        const span = document.createElement("span");
+        span.className = "px-3 py-1 rounded-full text-sm text-white/80 border border-white/20 bg-white/10";
+        span.textContent = `#${escapeHtml(tag)}`;
+        wrapper.appendChild(span);
+    });
+}
+
 async function createDiary(payload) {
     return apiRequest("/diaries/", {
         method: "POST",
