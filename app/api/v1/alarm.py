@@ -41,9 +41,8 @@ async def save_push_subscription(
     기존 메모리 저장 방식에서 DB 저장으로 확장하였다.
     이미 구독 정보가 있으면 덮어쓰고, 없으면 새로 생성한다.
     """
-    user_id = str(current_user.id)
     result = await db.execute(
-        select(PushSubscription).where(PushSubscription.user_id == user_id)
+        select(PushSubscription).where(PushSubscription.user_id == current_user.id)
     )
     sub = result.scalar_one_or_none()
 
@@ -53,7 +52,7 @@ async def save_push_subscription(
         sub.auth = payload.keys.get("auth", "")
     else:
         sub = PushSubscription(
-            user_id=user_id,
+            user_id=current_user.id,
             endpoint=payload.endpoint,
             p256dh=payload.keys.get("p256dh", ""),
             auth=payload.keys.get("auth", ""),
@@ -73,7 +72,7 @@ async def read_alarms(
     현재 로그인한 사용자의 알람 목록을 조회한다.
     """
     result = await db.execute(
-        select(Alarm).where(Alarm.user_id == str(current_user.id))
+        select(Alarm).where(Alarm.user_id == current_user.id)
     )
     alarms = result.scalars().all()
     return alarms
@@ -88,7 +87,7 @@ async def read_due_alarms(
     현재 로그인한 사용자의 알람 중,
     지금 시각 기준으로 실행 대상인 알람만 반환한다.
     """
-    due_alarms = await get_due_alarms(db, str(current_user.id))
+    due_alarms = await get_due_alarms(db, current_user.id)
 
     return {
         "count": len(due_alarms),
@@ -121,7 +120,7 @@ async def test_due_alarms(
     """
     result = await db.execute(
         select(Alarm).where(
-            Alarm.user_id == str(current_user.id),
+            Alarm.user_id == current_user.id,
             Alarm.is_enabled.is_(True),
         )
     )
@@ -191,7 +190,7 @@ async def create_alarm(
     """
     same_time = await db.execute(
         select(Alarm).where(
-            Alarm.user_id == str(current_user.id),
+            Alarm.user_id == current_user.id,
             Alarm.alarm_time == alarm_data.alarm_time,
         )
     )
@@ -202,7 +201,7 @@ async def create_alarm(
     repeat_days_str = ",".join(alarm_data.repeat_days) if alarm_data.repeat_days else None
 
     new_alarm = Alarm(
-        user_id=str(current_user.id),
+        user_id=current_user.id,
         alarm_time=alarm_data.alarm_time,
         repeat_days=repeat_days_str,
         is_enabled=alarm_data.is_enabled,
@@ -230,7 +229,7 @@ async def update_alarm(
     result = await db.execute(
         select(Alarm).where(
             Alarm.id == alarm_id,
-            Alarm.user_id == str(current_user.id),
+            Alarm.user_id == current_user.id,
         )
     )
     alarm = result.scalar_one_or_none()
@@ -239,7 +238,7 @@ async def update_alarm(
 
     same_time = await db.execute(
         select(Alarm).where(
-            Alarm.user_id == str(current_user.id),
+            Alarm.user_id == current_user.id,
             Alarm.alarm_time == alarm_data.alarm_time,
             Alarm.id != alarm_id,
         )
@@ -271,7 +270,7 @@ async def delete_alarm(
     result = await db.execute(
         select(Alarm).where(
             Alarm.id == alarm_id,
-            Alarm.user_id == str(current_user.id),
+            Alarm.user_id == current_user.id,
         )
     )
     alarm = result.scalar_one_or_none()

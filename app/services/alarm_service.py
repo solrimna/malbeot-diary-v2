@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 import json
 
@@ -10,7 +11,7 @@ from app.models.alarm import Alarm
 from app.models.push_subscription import PushSubscription
 
 
-async def get_due_alarms(db: AsyncSession, user_id: str | None = None):
+async def get_due_alarms(db: AsyncSession, user_id: uuid.UUID | None = None):
     """
     현재 시각 기준으로 실행되어야 하는 알람 목록을 반환한다.
     user_id가 주어지면 해당 사용자의 알람만 조회한다.
@@ -76,7 +77,7 @@ async def trigger_alarm(db: AsyncSession, alarm: Alarm):
 
     # 기존 메모리 조회에서 DB 조회로 확장하였다.
     result = await db.execute(
-        select(PushSubscription).where(PushSubscription.user_id == str(alarm.user_id))
+        select(PushSubscription).where(PushSubscription.user_id == alarm.user_id)
     )
     sub = result.scalar_one_or_none()
     settings = get_settings()

@@ -1,3 +1,4 @@
+import uuid
 from datetime import time, datetime
 from typing import Optional
 
@@ -12,7 +13,7 @@ class AlarmCreate(BaseModel):
 
 class AlarmResponse(BaseModel):
     id: int
-    user_id: str
+    user_id: uuid.UUID
     alarm_time: time
     repeat_days: Optional[str] = None
     is_enabled: bool
