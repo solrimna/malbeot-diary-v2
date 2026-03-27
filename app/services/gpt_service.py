@@ -108,7 +108,13 @@ class GPTService:
             )
             result = response.choices[0].message.content.strip()
             hashtags = [tag.strip() for tag in result.split(",") if tag.strip()]
-            return hashtags[:5]
+            # 오류 문구나 비정상 태그 필터링
+            valid_hashtags = [
+                tag for tag in hashtags
+                if tag and len(tag) <= 10
+                and not any(kw in tag for kw in ["죄송", "죄송합니다", "제공", "이해", "어렵", "내용"])
+            ]
+            return valid_hashtags[:5]
         except Exception as e:
             logger.error(f"해시태그 생성 오류: {e}")
             return []
