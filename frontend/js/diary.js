@@ -205,6 +205,92 @@ function initDiaryListPage() {
     renderDiaryShelfFromApi();
 }
 
+const EMOTION_OPTIONS = [
+    { emoji: "😊", label: "행복" },
+    { emoji: "🥰", label: "설렘" },
+    { emoji: "🤩", label: "신남" },
+    { emoji: "😌", label: "평온" },
+    { emoji: "😢", label: "슬픔" },
+    { emoji: "😔", label: "우울" },
+    { emoji: "😡", label: "화남" },
+    { emoji: "😤", label: "답답" },
+    { emoji: "😰", label: "불안" },
+    { emoji: "😴", label: "피곤" },
+];
+
+const WEATHER_OPTIONS = [
+    { emoji: "☀️", label: "맑음" },
+    { emoji: "⛅", label: "구름" },
+    { emoji: "☁️", label: "흐림" },
+    { emoji: "🌧️", label: "비" },
+    { emoji: "⛈️", label: "천둥" },
+    { emoji: "🌨️", label: "눈" },
+    { emoji: "🌬️", label: "바람" },
+    { emoji: "🌫️", label: "안개" },
+];
+
+function initIconSelect(wrapperId, options, hiddenInputId) {
+    const wrapper = document.getElementById(wrapperId);
+    const hiddenInput = document.getElementById(hiddenInputId);
+    if (!wrapper || !hiddenInput) return;
+
+    const trigger = wrapper.querySelector(".diary-icon-select-trigger");
+    const emojiEl = wrapper.querySelector(".diary-icon-select-emoji");
+    const labelEl = wrapper.querySelector(".diary-icon-select-label");
+
+    // 드롭다운을 body에 직접 붙여 overflow/backdrop-filter 영향 차단
+    const dropdown = document.createElement("div");
+    dropdown.className = "diary-icon-select-dropdown";
+    dropdown.hidden = true;
+    document.body.appendChild(dropdown);
+
+    options.forEach(({ emoji, label }) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "diary-icon-option";
+        btn.innerHTML = `<span>${emoji}</span><span>${label}</span>`;
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            hiddenInput.value = label;
+            emojiEl.textContent = emoji;
+            labelEl.textContent = label;
+            labelEl.style.color = "#ffffff";
+            dropdown.hidden = true;
+            wrapper.classList.remove("is-open");
+        });
+        dropdown.appendChild(btn);
+    });
+
+    trigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = !dropdown.hidden;
+        document.querySelectorAll(".diary-icon-select-dropdown").forEach((el) => {
+            el.hidden = true;
+        });
+        document.querySelectorAll(".diary-icon-select.is-open").forEach((el) => {
+            el.classList.remove("is-open");
+        });
+        if (!isOpen) {
+            const rect = trigger.getBoundingClientRect();
+            dropdown.style.top = (rect.bottom + 6) + "px";
+            dropdown.style.left = rect.left + "px";
+            dropdown.style.width = Math.max(rect.width, 260) + "px";
+            dropdown.hidden = false;
+            wrapper.classList.add("is-open");
+        }
+    });
+
+    document.addEventListener("click", () => {
+        dropdown.hidden = true;
+        wrapper.classList.remove("is-open");
+    });
+}
+
+function initIconSelects() {
+    initIconSelect("emotion-icon-select", EMOTION_OPTIONS, "diary-emotion");
+    initIconSelect("weather-icon-select", WEATHER_OPTIONS, "diary-weather");
+}
+
 function initDiaryDetailPage() {
     const form = document.getElementById("diary-create-form");
     const personaSelect = document.getElementById("diary-persona-select");
@@ -218,6 +304,7 @@ function initDiaryDetailPage() {
         dateInput.value = new Date().toISOString().slice(0, 10);
     }
 
+    initIconSelects();
     if (typeof initCustomSelect === "function") initCustomSelect(personaSelect);
     populatePersonaSelect(personaSelect, "", true);
 

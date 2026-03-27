@@ -526,9 +526,9 @@ function renderProfileCalendar() {
 
         let badge = "";
         if (hasDiary) {
-            badge = '<span class="profile-calendar-mark">작성 완료</span>';
+            badge = '<span class="profile-calendar-mark"><i class="fa-solid fa-book-quran"></i><span>작성 완료</span></span>';
         } else if (isToday) {
-            badge = '<a href="diary_write.html" class="profile-calendar-write-link"><i class="fa-solid fa-book-quran"></i></a>';
+            badge = '<a href="diary_write.html" class="profile-calendar-write-link"><i class="fa-solid fa-pen-nib"></i><span>작성하기</span></a>';
         }
 
         cell.className = `profile-calendar-cell${hasDiary ? " has-diary" : ""}${isToday ? " is-today" : ""}`;
