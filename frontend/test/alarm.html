@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>알람 설정</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    body { background-color: #f5f5f5 !important; color: #222 !important; }
+    .card { background-color: #fff !important; color: #222 !important; }
+    label, h1, h2, p { color: #222 !important; }
+  </style>
+</head>
+<body>
+  <main class="page-container">
+    <section class="card">
+      <h1>알람 설정</h1>
+      <p>시간과 요일을 선택해 알람을 등록하세요.</p>
+
+      <div class="form-group">
+        <label for="token-input">Bearer 토큰 (docs에서 복사)</label>
+        <input type="text" id="token-input" placeholder="eyJ..." style="width:100%" />
+      </div>
+
+      <div class="form-group">
+        <label for="alarm-time">알람 시간</label>
+        <input type="time" id="alarm-time" />
+      </div>
+
+      <div class="form-group">
+        <label>반복 요일</label>
+        <div class="weekday-group">
+          <label><input type="checkbox" id="day-mon" /> 월</label>
+          <label><input type="checkbox" id="day-tue" /> 화</label>
+          <label><input type="checkbox" id="day-wed" /> 수</label>
+          <label><input type="checkbox" id="day-thu" /> 목</label>
+          <label><input type="checkbox" id="day-fri" /> 금</label>
+          <label><input type="checkbox" id="day-sat" /> 토</label>
+          <label><input type="checkbox" id="day-sun" /> 일</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="alarm-enabled" checked />
+          알람 활성화
+        </label>
+      </div>
+
+      <div class="button-group">
+        <button type="button" id="save-alarm-btn">알람 저장</button>
+        <button type="button" id="load-alarms-btn">알람 불러오기</button>
+      </div>
+
+      <hr />
+
+      <section>
+        <h2>등록된 알람</h2>
+        <div id="alarm-list"></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="/js/alarm.js"></script>
+</body>
+</html>

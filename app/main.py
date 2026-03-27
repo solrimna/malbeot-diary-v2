@@ -1,16 +1,18 @@
+import logging
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
-
+from app.services.alarm_scheduler import start_scheduler, stop_scheduler
 from app.database import engine, Base
 from app.api.v1.router import api_router
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    start_scheduler()
     yield
+    stop_scheduler()
 
 
 app = FastAPI(
@@ -22,10 +24,14 @@ app = FastAPI(
 
 app.include_router(api_router, prefix="/api/v1")
 
-# B팀원 프론트엔드 정적 파일 서빙
-app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
-
-
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}
+
+# / (루트 경로)를 프론트엔드가 다 먹어버려 오류발생해 수정
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s"
+)

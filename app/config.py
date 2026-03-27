@@ -18,8 +18,17 @@ class Settings(BaseSettings):
     # OpenAI
     OPENAI_API_KEY: str = ""
 
-    # Google Cloud STT/TTS (나 담당)
-    GOOGLE_APPLICATION_CREDENTIALS: str = "./credentials/google-service-account.json"
+    # Azure Speech
+    AZURE_SPEECH_KEY: str = ""
+    AZURE_SPEECH_REGION: str = "koreacentral"
+
+    # Web Push
+    VAPID_PUBLIC_KEY: str = ""
+    VAPID_PRIVATE_KEY: str = ""
+    VAPID_CLAIMS_SUB: str = "mailto:test@example.com"
+
+    # Alarm
+    ALARM_CHECK_INTERVAL_SECONDS: int = 30
 
     class Config:
         env_file = ".env"

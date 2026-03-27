@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일기 작성 - "하루" commit()</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Petit+Formal+Script&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+        }
+
+        #us-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+        }
+
+        /* 워터마크 강제 숨김 */
+        a[href*="unicorn.studio"],
+        a[href*="hiunicornstudio"],
+        .unicorn-studio-watermark,
+        [class*="unicorn-studio"],
+        [id*="unicorn-studio"] {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+
+        /* 콘텐츠가 배경 위로 올라오도록 레이어 설정 */
+        .diary-layer {
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="page-diary-detail min-h-screen relative font-kr">
+
+    <div id="us-background" data-us-project="ZnNikMOUWaAR1UzFsvqp"></div>
+
+    <a href="my-diary.html" class="diary-layer absolute top-8 left-8 text-white/70 flex items-center gap-2 hover:text-white transition-opacity z-50">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <span class="tracking-widest text-sm uppercase">Back to Diary</span>
+    </a>
+
+    <main class="diary-layer min-h-screen px-6 py-24 md:px-10 lg:px-16">
+        <div class="diary-detail-shell">
+            <div class="text-center mb-12">
+                <p class="font-script text-2xl md:text-3xl text-white/70 mb-3">Write your day</p>
+                <h1 class="text-3xl md:text-5xl tracking-tight text-white font-semibold mb-4">
+                    오늘의 일기 작성
+                </h1>
+                <div class="w-24 h-[1px] mx-auto bg-white/30 mb-5"></div>
+                <p class="text-white/70 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+                    오늘 있었던 일과 감정을 자유롭게 적어보세요. AI가 일기를 정리하고, 선택한 페르소나에 맞는 말투로 반응해줄 수 있어요.
+                </p>
+            </div>
+
+            <div class="diary-detail-grid">
+                <section class="diary-detail-panel">
+                    <div class="flex items-center justify-between gap-4 mb-8">
+                        <div>
+                            <p class="font-script text-xl text-white/70 mb-1">Diary editor</p>
+                            <h2 class="text-2xl md:text-3xl font-semibold text-white">나의 하루 기록하기</h2>
+                        </div>
+
+                        <div class="flex flex-col items-end gap-1">
+                            <button type="button" id="voice-btn" class="voice-btn">음성으로 입력</button>
+                            <div class="flex items-center gap-1 text-xs text-white/50">
+                                <span>모드:</span>
+                                <button type="button" id="stt-mode-toggle" class="text-xs text-white/70 underline underline-offset-2 hover:text-white transition-colors bg-transparent border-none cursor-pointer p-0"></button>
+                            </div>
+                            <span id="stt-status" class="hidden text-xs text-white/70 text-right max-w-[200px] leading-snug"></span>
+                        </div>
+                    </div>
+
+                    <form id="diary-create-form" class="space-y-6">
+                        <div class="diary-meta-grid">
+                            <div>
+                                <label class="diary-detail-label">날짜</label>
+                                <input id="diary-date" type="date" class="diary-detail-input">
+                            </div>
+
+                            <div>
+                                <label class="diary-detail-label">오늘의 감정</label>
+                                <div class="diary-icon-select" id="emotion-icon-select">
+                                    <button type="button" class="diary-icon-select-trigger">
+                                        <span class="diary-icon-select-emoji"></span>
+                                        <span class="diary-icon-select-label">감정 선택</span>
+                                        <span class="diary-icon-select-arrow">▼</span>
+                                    </button>
+                                </div>
+                                <input type="hidden" id="diary-emotion">
+                            </div>
+
+                            <div>
+                                <label class="diary-detail-label">날씨</label>
+                                <div class="diary-icon-select" id="weather-icon-select">
+                                    <button type="button" class="diary-icon-select-trigger">
+                                        <span class="diary-icon-select-emoji"></span>
+                                        <span class="diary-icon-select-label">날씨 선택</span>
+                                        <span class="diary-icon-select-arrow">▼</span>
+                                    </button>
+                                </div>
+                                <input type="hidden" id="diary-weather">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="diary-detail-label">제목</label>
+                            <input id="diary-title" type="text" class="diary-detail-input" placeholder="오늘 하루를 한 줄로 남겨보세요" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                        </div>
+
+                        <div>
+                            <label class="diary-detail-label">일기 내용</label>
+                            <textarea id="diary-content" class="diary-detail-textarea" placeholder="예: 오늘은 오랜만에 친구를 만나 카페에 갔다. 별거 아닌 이야기였는데 이상하게 마음이 좀 풀렸다. 집에 돌아오는 길에는 비가 조금 내렸고, 괜히 영화 속 한 장면 같다고 느꼈다."></textarea>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                            <button id="diary-save-button" type="submit" class="save-btn">저장하기</button>
+                            <a href="my-diary.html" class="cancel-btn inline-flex items-center justify-center">취소</a>
+                        </div>
+                    </form>
+                </section>
+
+                <aside class="diary-detail-side">
+                    <div class="mb-8">
+                        <p class="font-script text-xl text-white/70 mb-1">AI preview</p>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-white">AI 리뷰</h2>
+                        <p class="text-white/70 text-sm mt-3 leading-relaxed">
+                            일기를 작성하면 AI가 내용을 간단히 정리하고, 선택한 페르소나에 맞게 반응해주는 영역이에요.
+                        </p>
+                    </div>
+
+                    <div class="space-y-5">
+                        <div class="ai-preview-card diary-side-select-card">
+                            <label class="diary-detail-label diary-side-label">페르소나</label>
+                            <select id="diary-persona-select" class="diary-detail-select diary-side-select">
+                                <option value="" selected disabled hidden>선택하기</option>
+                            </select>
+                        </div>
+
+                        <!-- AI 자동요약 / AI 요약 카드: UI 담당자 확인 후 반영 예정
+                        <div class="ai-preview-card ai-toggle-card">
+                            <div class="ai-toggle-row">
+                                <span class="ai-toggle-label">AI 자동요약</span>
+                                <button id="ai-auto-summary-toggle" type="button" class="ai-toggle-button is-on" aria-pressed="true">
+                                    <span class="ai-toggle-track">
+                                        <span class="ai-toggle-thumb"></span>
+                                    </span>
+                                    <span id="ai-auto-summary-state" class="ai-toggle-state">ON</span>
+                                </button>
+                            </div>
+                            <button id="ai-manual-summary-button" type="button" class="ai-manual-summary-button hidden">요약하기</button>
+                        </div>
+
+                        <div class="ai-preview-card">
+                            <div class="ai-preview-title">AI 요약</div>
+                            <div class="ai-preview-body">
+                            </div>
+                        </div>
+                        -->
+
+                        <div class="ai-preview-card ai-toggle-card">
+                            <div class="ai-toggle-row">
+                                <span class="ai-toggle-label">나래이션</span>
+                                <button id="ai-autoplay-toggle" type="button" class="ai-toggle-button is-on" aria-pressed="true">
+                                    <span class="ai-toggle-track">
+                                        <span class="ai-toggle-thumb"></span>
+                                    </span>
+                                    <span id="ai-autoplay-state" class="ai-toggle-state">ON</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="ai-preview-card">
+                            <div class="ai-preview-title">AI 한마디</div>
+                            <div class="ai-preview-body" id="ai-comment-body">
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/frontend.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/diary.js"></script>
+    <script src="js/stt.js"></script>
+</body>
+</html>
+ 
