@@ -294,6 +294,15 @@ async function initDiaryReadPage() {
         weatherEl.value = diary.weather || "";
         titleEl.value = diary.title || "";
         contentEl.value = diary.content || "";
+
+        // 해시태그 로드
+        try {
+            const hashtagData = await fetchDiaryHashtags(diaryId);
+            renderHashtags(hashtagData.hashtags || []);
+        } catch (_) {
+            // 해시태그 없어도 페이지 정상 표시
+        }
+        
         await populatePersonaSelect(personaSelect, diary.persona_id || "");
         setDiaryReadOnly(fields, true);
 
