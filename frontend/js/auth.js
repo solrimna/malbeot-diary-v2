@@ -1,6 +1,5 @@
 const ACCESS_TOKEN_KEY = "access_token";
 const AUTH_USER_KEY = "auth_user";
-const AUTH_BOOTSTRAP_KEY = "auth_bootstrap_done";
 
 function setMessage(element, message, isError = false) {
     if (!element) {
@@ -56,14 +55,6 @@ function getAuthUser() {
     }
 }
 
-function resetAuthOnFirstVisit() {
-    if (sessionStorage.getItem(AUTH_BOOTSTRAP_KEY)) {
-        return;
-    }
-
-    clearAuth();
-    sessionStorage.setItem(AUTH_BOOTSTRAP_KEY, "true");
-}
 
 async function logout() {
     try {
@@ -300,7 +291,6 @@ function initProtectedPage() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    resetAuthOnFirstVisit();
     initAuthNav();
     initIndexGreeting();
     initProfileLogout();
