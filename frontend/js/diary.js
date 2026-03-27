@@ -417,6 +417,18 @@ async function initDiaryReadPage() {
                         if (reviewEl && updatedFeedback.feedback_text) {
                             //console.log("[수정 후 새 피드백]", updatedFeedback.feedback_text);
                             reviewEl.textContent = updatedFeedback.feedback_text;
+
+                            // 이전 TTS 음성 초기화
+                            const audioEl = document.getElementById("tts-audio");
+                            const ttsButton = document.getElementById("tts-play-button");
+                            if (audioEl) {
+                                audioEl.pause();
+                                audioEl.src = "";
+                                audioEl.classList.add("hidden");
+                            }
+                            if (ttsButton) {
+                                ttsButton.textContent = "🔊 듣기";
+                            }
                         }
                     } catch (_) {
                         // 피드백 갱신 실패해도 수정은 성공으로 처리
