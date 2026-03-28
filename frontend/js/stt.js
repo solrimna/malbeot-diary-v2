@@ -63,7 +63,8 @@ const stt = (() => {
             setRecordingState(false);
             return;
         }
-        ws = new WebSocket(`ws://localhost:8000/api/v1/voice/ws/stt`);
+        const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
+        ws = new WebSocket(`${wsProtocol}//${location.host}/api/v1/voice/ws/stt`);
 
         ws.onopen = () => {
             console.log("STT WebSocket 연결됨");
