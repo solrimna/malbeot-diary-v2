@@ -90,27 +90,22 @@ function renderHashtags(hashtags, showEmpty = false) {
         return;
     }
 
-    hashtags.forEach((tag) => {
-        const span = document.createElement("span");
-        span.className = "group relative px-3 py-1 rounded-full text-sm text-white/80 border border-white/20 bg-white/10 cursor-pointer hover:border-white/50 transition-all";
-        const tagSpan = document.createElement("span");
-        tagSpan.className = "tag-text cursor-pointer hover:text-white";
-        tagSpan.textContent = `#${tag}`;
-        tagSpan.addEventListener("click", () => {
-            window.location.href = "my-diary.html?tag=" + encodeURIComponent(tag);
+   const tagSpan = document.createElement("span");
+   tagSpan.className = "tag-text cursor-pointer hover:text-white";
+   tagSpan.textContent = `#${tag}`;
+   tagSpan.addEventListener("click", () => {
+    window.location.href = "my-diary.html?tag=" + encodeURIComponent(tag);
 });
 
-        const deleteBtn = document.createElement("button");
-        deleteBtn.type = "button";
-        deleteBtn.className = "tag-delete hidden group-hover:inline-block ml-1 text-white/50 hover:text-white text-xs font-bold";
-        deleteBtn.textContent = "✕";
-        deleteBtn.addEventListener("click", () => removeHashtag(deleteBtn, tag));
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.className = "tag-delete hidden group-hover:inline-block ml-1 text-white/50 hover:text-white text-xs font-bold";
+    deleteBtn.textContent = "✕";
+    deleteBtn.addEventListener("click", () => removeHashtag(deleteBtn, tag));
 
-        span.appendChild(tagSpan);
-        span.appendChild(deleteBtn);
-        wrapper.appendChild(span);
-        wrapper.appendChild(span);
-    });
+span.appendChild(tagSpan);
+span.appendChild(deleteBtn);
+wrapper.appendChild(span);
     }
 async function removeHashtag(button, tagName) {
     const span = button.closest("span");
