@@ -95,7 +95,7 @@ function renderHashtags(hashtags, showEmpty = false) {
         span.className = "group relative px-3 py-1 rounded-full text-sm text-white/80 border border-white/20 bg-white/10 cursor-pointer hover:border-white/50 transition-all";
         span.innerHTML = `
             <span class="tag-text cursor-pointer hover:text-white"
-                onclick="window.location.href='my-diary.html?tag=${encodeURIComponent(tag)}'">
+                onclick="window.location.href='my-diary.html?tag=' + encodeURIComponent('${escapeHtml(tag)}')">
                 #${escapeHtml(tag)}
             </span>
             <button type="button"
