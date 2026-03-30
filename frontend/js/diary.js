@@ -49,8 +49,11 @@ function createDiaryCard(diary) {
     return book;
 }
 
-async function fetchDiaries() {
-    return apiRequest("/diaries/", { method: "GET" });
+// before: 커서 날짜 (이 날짜보다 오래된 일기 요청), limit: 한 번에 받을 개수
+async function fetchDiaries({ before = null, limit = 20 } = {}) {
+    const params = new URLSearchParams({ limit });
+    if (before) params.append("before", before);
+    return apiRequest(`/diaries/?${params.toString()}`, { method: "GET" });
 }
 
 async function fetchPersonas() {
@@ -169,40 +172,77 @@ async function populatePersonaSelect(selectElement, selectedPersonaId = "", useA
     }
 }
 
+// 책장 페이지네이션 상태
+// - diaryShelfCursor: 마지막으로 받은 일기의 diary_date (다음 요청의 before 값)
+// - diaryShelfHasMore: 추가로 불러올 일기가 있는지 여부
+// - diaryShelfLoading: 중복 요청 방지 플래그
+let diaryShelfCursor = null;
+let diaryShelfHasMore = true;
+let diaryShelfLoading = false;
+
+const DIARY_SHELF_LIMIT = 20; // 한 번에 불러올 개수 (데스크탑 기준 약 15권 표시)
+
+// 초기 로드: 책장을 비우고 최신 일기부터 첫 배치를 불러옴
 async function renderDiaryShelfFromApi() {
     const shelf = document.getElementById("diary-shelf");
-    if (!shelf) {
-        return;
-    }
+    if (!shelf) return;
 
+    // 상태 초기화
+    diaryShelfCursor = null;
+    diaryShelfHasMore = true;
+    shelf.innerHTML = "";
+
+    await loadMoreDiaries();
+
+    diaryShelfIndex = 0;
+    updateDiaryShelfPosition();
+    renderDiaryProgress();
+}
+
+// 추가 로드: 커서 기준으로 다음 배치를 책장 끝에 이어 붙임
+async function loadMoreDiaries() {
+    const shelf = document.getElementById("diary-shelf");
+    if (!shelf || !diaryShelfHasMore || diaryShelfLoading) return;
+
+    diaryShelfLoading = true;
     try {
-        const diaries = await fetchDiaries();
-        shelf.innerHTML = "";
+        const diaries = await fetchDiaries({ before: diaryShelfCursor, limit: DIARY_SHELF_LIMIT });
 
         if (!diaries.length) {
-            shelf.innerHTML = `
-                <div class="diary-empty-book" id="diary-empty-state">
-                    아직 저장된 일기가 없어요.<br>
-                    첫 번째 일기를 작성해보세요.
-                </div>
-            `;
-        } else {
-            diaries.forEach((diary) => {
-                shelf.appendChild(createDiaryCard(diary));
-            });
+            // 첫 로드인데 결과가 없으면 빈 상태 표시
+            if (!diaryShelfCursor) {
+                shelf.innerHTML = `
+                    <div class="diary-empty-book" id="diary-empty-state">
+                        아직 저장된 일기가 없어요.<br>
+                        첫 번째 일기를 작성해보세요.
+                    </div>
+                `;
+            }
+            diaryShelfHasMore = false;
+            return;
         }
 
-        diaryShelfIndex = 0;
-        updateDiaryShelfPosition();
-        renderDiaryProgress();
+        diaries.forEach((diary) => shelf.appendChild(createDiaryCard(diary)));
+
+        // 마지막 일기의 날짜를 다음 요청의 커서로 저장
+        diaryShelfCursor = diaries[diaries.length - 1].diary_date;
+
+        // 받은 개수가 limit보다 적으면 더 이상 데이터 없음
+        if (diaries.length < DIARY_SHELF_LIMIT) diaryShelfHasMore = false;
+
     } catch (error) {
-        shelf.innerHTML = `
-            <div class="diary-empty-book" id="diary-empty-state">
-                일기를 불러오지 못했어요.<br>
-                ${escapeHtml(error.message || "다시 시도해주세요.")}
-            </div>
-        `;
+        // 첫 로드 실패 시에만 에러 메시지 표시
+        if (!diaryShelfCursor) {
+            shelf.innerHTML = `
+                <div class="diary-empty-book" id="diary-empty-state">
+                    일기를 불러오지 못했어요.<br>
+                    ${escapeHtml(error.message || "다시 시도해주세요.")}
+                </div>
+            `;
+        }
         renderDiaryProgress();
+    } finally {
+        diaryShelfLoading = false;
     }
 }
 

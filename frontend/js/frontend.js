@@ -230,53 +230,54 @@ function closeSearchModal() {
     modal.classList.add("hidden");
 }
 
-function saveDiaryEntry() {
-    const dateInput = document.getElementById("diary-date");
-    const titleInput = document.getElementById("diary-title");
-    const contentInput = document.getElementById("diary-content");
-    const shelf = document.getElementById("diary-shelf");
-    const emptyState = document.getElementById("diary-empty-state");
+// 미사용 코드 주석
+// function saveDiaryEntry() {
+//     const dateInput = document.getElementById("diary-date");
+//     const titleInput = document.getElementById("diary-title");
+//     const contentInput = document.getElementById("diary-content");
+//     const shelf = document.getElementById("diary-shelf");
+//     const emptyState = document.getElementById("diary-empty-state");
 
-    if (!dateInput || !titleInput || !contentInput || !shelf) return;
+//     if (!dateInput || !titleInput || !contentInput || !shelf) return;
 
-    const date = dateInput.value.trim();
-    const title = titleInput.value.trim();
-    const content = contentInput.value.trim();
+//     const date = dateInput.value.trim();
+//     const title = titleInput.value.trim();
+//     const content = contentInput.value.trim();
 
-    if (!date || !title || !content) {
-        alert("날짜, 제목, 일기 내용을 모두 입력해주세요.");
-        return;
-    }
+//     if (!date || !title || !content) {
+//         alert("날짜, 제목, 일기 내용을 모두 입력해주세요.");
+//         return;
+//     }
 
-    if (emptyState) {
-        emptyState.remove();
-    }
+//     if (emptyState) {
+//         emptyState.remove();
+//     }
 
-    const book = document.createElement("div");
-    book.className = "diary-book";
+//     const book = document.createElement("div");
+//     book.className = "diary-book";
 
-    book.innerHTML = `
-        <div class="diary-book-inner">
-            <div class="diary-book-date">${escapeHtml(formatDiaryDate(date))}</div>
-            <div class="diary-book-title">${escapeHtml(title)}</div>
+//     book.innerHTML = `
+//         <div class="diary-book-inner">
+//             <div class="diary-book-date">${escapeHtml(formatDiaryDate(date))}</div>
+//             <div class="diary-book-title">${escapeHtml(title)}</div>
 
-            <div class="diary-book-footer">
-                <button type="button" class="diary-book-delete" onclick="deleteDiaryBook(this)">삭제</button>
-            </div>
-        </div>
-    `;
+//             <div class="diary-book-footer">
+//                 <button type="button" class="diary-book-delete" onclick="deleteDiaryBook(this)">삭제</button>
+//             </div>
+//         </div>
+//     `;
 
-    shelf.prepend(book);
+//     shelf.prepend(book);
 
-    dateInput.value = "";
-    titleInput.value = "";
-    contentInput.value = "";
+//     dateInput.value = "";
+//     titleInput.value = "";
+//     contentInput.value = "";
 
-    diaryShelfIndex = 0;
-    updateDiaryShelfPosition();
-    renderDiaryProgress();
-    closeDiaryModal();
-}
+//     diaryShelfIndex = 0;
+//     updateDiaryShelfPosition();
+//     renderDiaryProgress();
+//     closeDiaryModal();
+// }
 
 function deleteDiaryBook(button) {
     if (!confirm("삭제하시겠습니까?")) {
@@ -323,6 +324,20 @@ function moveDiaryShelf(direction) {
     if (diaryShelfIndex < 0) diaryShelfIndex = 0;
     if (diaryShelfIndex > maxIndex) diaryShelfIndex = maxIndex;
 
+    // 화면에 보이는 마지막 책이 전체 끝에 닿으면 다음 배치 요청
+    // diaryShelfIndex = 왼쪽 끝 책 번호(step=책 너비라서)
+    // diaryShelfIndex + 한 화면에 보이는 책 수 >= maxIndex 이면 끝 도달
+    if (typeof loadMoreDiaries === "function") {
+        const isMobile = window.innerWidth <= 768;
+        const bookWidth = isMobile ? 50 : 75;
+        const wrapperWidth = document.querySelector(".diary-shelf-wrapper")?.offsetWidth || window.innerWidth;
+        const visibleCount = Math.floor(wrapperWidth / bookWidth);
+
+        if (diaryShelfIndex + visibleCount >= maxIndex) {
+            loadMoreDiaries().then(() => renderDiaryProgress());
+        }
+    }
+
     updateDiaryShelfPosition();
     renderDiaryProgress();
 }
@@ -332,7 +347,10 @@ function updateDiaryShelfPosition() {
     if (!shelf) return;
 
     const isMobile = window.innerWidth <= 768;
-    const step = isMobile ? 90 : 106;
+    // 책 1권 단위로 이동:
+    // 데스크탑(72px + gap 3px = 75px)
+    // 모바일(48px + gap 2px = 50px)
+    const step = isMobile ? 50 : 75;
     const offset = diaryShelfIndex * step;
 
     shelf.style.transform = `translateX(-${offset}px)`;
