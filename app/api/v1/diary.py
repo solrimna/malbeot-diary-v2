@@ -60,27 +60,16 @@ async def create_diary(
     except Exception:
         pass  # 피드백 실패해도 일기 생성은 성공으로 처리
     
-    # 해시태그 자동 생성
+   # 해시태그 자동 생성
     try:
         from app.services.gpt_service import gpt_service
         hashtags = await gpt_service.generate_hashtags(diary.content)
         if hashtags:
             await diary_svc.add_hashtags(db, diary.id, current_user.id, hashtags)
-    except Exception:
-        pass  # 해시태그 생성 실패해도 일기 생성은 성공으로 처리
+    except Exception as e:
+        logger.error(f"해시태그 생성 실패: {e}")  # 에러 출력으로 변경
     
     return diary
-
-    # 해시태그 자동 생성
-    try:
-        from app.services.gpt_service import gpt_service
-        from app.services.diary_service import DiaryService
-        hashtags = await gpt_service.generate_hashtags(diary.content)
-        if hashtags:
-            await diary_svc.add_hashtags(db, diary.id, current_user.id, hashtags)
-    
-    except Exception:
-        pass  # 해시태그 생성 실패해도 일기 생성은 성공으로 처리
 
 # ── GET /diaries/{diary_id} ─ 단건 조회 ─────────
 @router.get("/{diary_id}", response_model=DiaryResponse)
