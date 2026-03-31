@@ -17,9 +17,10 @@ class TTSService:
     async def synthesize(
         self,
         text: str,
+        voice: str = "nova",
     ) -> bytes:
         if settings.USE_REDIS:
-            cached = await get_tts_cache(text)
+            cached = await get_tts_cache(text, voice)
             if cached:
                 logger.info("TTS 캐시 hit: %.0f자", len(text))
                 return cached
@@ -28,7 +29,7 @@ class TTSService:
         try:
             response = await client.audio.speech.create(
                 model="tts-1",
-                voice="nova",
+                voice=voice,
                 input=text,
                 response_format="mp3",#wav
             )
@@ -48,7 +49,7 @@ class TTSService:
         logger.info("TTS 생성 완료: %.2fs | %.0f자 | %.1fKB", elapsed, len(text), len(audio_bytes) / 1024)
 
         if settings.USE_REDIS:
-            await set_tts_cache(text, audio_bytes)
+            await set_tts_cache(text, audio_bytes, voice)
 
         return audio_bytes
 

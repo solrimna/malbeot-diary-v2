@@ -17,8 +17,8 @@ async def get_redis():
     return _redis
 
 
-def make_tts_key(text: str) -> str:
-    hash_ = hashlib.md5(text.encode("utf-8")).hexdigest()
+def make_tts_key(text: str, voice: str = "nova") -> str:
+    hash_ = hashlib.md5(f"{voice}:{text}".encode("utf-8")).hexdigest()
     return f"tts:cache:{hash_}"
 
 
@@ -27,10 +27,10 @@ STATS_HIT_KEY = "tts:stats:hit"
 STATS_MISS_KEY = "tts:stats:miss"
 
 
-async def get_tts_cache(text: str) -> bytes | None:
+async def get_tts_cache(text: str, voice: str = "nova") -> bytes | None:
     try:
         r = await get_redis()
-        data = await r.get(make_tts_key(text))
+        data = await r.get(make_tts_key(text, voice))
         if data:
             await r.incr(STATS_HIT_KEY)
             return data
@@ -41,10 +41,10 @@ async def get_tts_cache(text: str) -> bytes | None:
         return None
 
 
-async def set_tts_cache(text: str, audio_bytes: bytes) -> None:
+async def set_tts_cache(text: str, audio_bytes: bytes, voice: str = "nova") -> None:
     try:
         r = await get_redis()
-        await r.set(make_tts_key(text), audio_bytes, ex=TTS_TTL)
+        await r.set(make_tts_key(text, voice), audio_bytes, ex=TTS_TTL)
     except Exception as e:
         logger.warning(f"[REDIS] set 실패: {e}")
 

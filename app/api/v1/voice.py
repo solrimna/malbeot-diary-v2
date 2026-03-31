@@ -25,6 +25,7 @@ router = APIRouter()
 # ── 요청/응답 스키마 ──────────────────────────────────────
 class TTSRequest(BaseModel):
     text: str
+    voice: str = "nova"
 
 
 class STTResponse(BaseModel):
@@ -65,7 +66,7 @@ async def text_to_speech(request: TTSRequest, current_user=Depends(get_current_u
     if not request.text.strip():
         raise HTTPException(status_code=400, detail="텍스트가 비어있어요")
 
-    audio_bytes = await tts_service.synthesize(text=request.text)
+    audio_bytes = await tts_service.synthesize(text=request.text, voice=request.voice)
 
     return Response(
         content=audio_bytes,

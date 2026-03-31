@@ -166,6 +166,7 @@ async function populatePersonaSelect(selectElement, selectedPersonaId = "", useA
             const option = document.createElement("option");
             option.value = persona.id;
             option.textContent = persona.name;
+            option.dataset.voice = persona.voice || "nova";
 
             if (selectedPersonaId && persona.id === selectedPersonaId) {
                 option.selected = true;
@@ -568,7 +569,10 @@ async function initDiaryReadPage() {
                             "Content-Type": "application/json",
                             ...(token ? { Authorization: `Bearer ${token}` } : {}),
                         },
-                        body: JSON.stringify({ text: reviewEl.textContent }),
+                        body: JSON.stringify({
+                        text: reviewEl.textContent,
+                        voice: personaSelect?.options[personaSelect.selectedIndex]?.dataset.voice || "nova",
+                    }),
                     });
                     if (ttsResponse.ok) {
                         const audioBlob = await ttsResponse.blob();
