@@ -2,6 +2,36 @@
 
 > 음성 입력과 AI 공감 피드백이 결합된 감성 일기 서비스
 
+**라이브 데모:** https://malbeot.duckdns.org/
+
+---
+
+## 주요 기능
+
+| 기능 | 설명 |
+|------|------|
+| 음성 일기 작성 | Azure STT로 음성을 텍스트로 변환하여 일기 작성 |
+| AI 공감 피드백 | 일기 저장 시 GPT 기반 말벗 피드백 자동 생성 |
+| TTS 음성 재생 | OpenAI TTS로 피드백을 말벗 목소리로 재생 |
+| 페르소나 커스텀 | Q&A 온보딩으로 나만의 AI 말벗 성격·목소리 설정 |
+| 해시태그 자동 생성 | GPT가 일기 내용에서 감정·사건·장소 등 해시태그 추출 |
+| AI 일기 검색 | 해시태그 필터 + GPT 자연어 검색으로 과거 일기 탐색 |
+| 캘린더 뷰 | 월별 달력으로 일기 기록 조회 |
+
+---
+
+## 기술 스택
+
+| 분류 | 사용 기술 |
+|------|-----------|
+| Backend | FastAPI, SQLAlchemy (async), Alembic |
+| AI | OpenAI GPT-4o-mini, OpenAI TTS, Azure Speech STT |
+| Database | PostgreSQL, Redis |
+| Infra | Docker Compose, Nginx, Let's Encrypt |
+| Frontend | Vanilla JS, HTML/CSS |
+
+---
+
 ## 시작하기
 
 ### 1. 저장소 clone
@@ -33,6 +63,14 @@ uv pip install -r requirements.txt
 ```bash
 uvicorn app.main:app --reload
 ```
+
+---
+
+## 문서
+
+트러블슈팅, 아키텍처 등 상세 문서는 [GitHub Wiki](../../wiki)를 참고해주세요.
+
+---
 
 ### Azure Speech API Key 발급
 1. [Azure Portal](https://portal.azure.com) 접속
