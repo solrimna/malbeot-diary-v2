@@ -193,6 +193,7 @@ async def onboarding_persona(
         custom_description=custom_description,
         image_url=body.image_url,
         voice=body.voice,
+        memory=body.memory,
         is_active=True,
     )
     db.add(persona)

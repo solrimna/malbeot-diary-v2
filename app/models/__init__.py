@@ -5,6 +5,7 @@ from app.models.hashtag import Hashtag, DiaryHashtag
 from app.models.ai_feedback import AiFeedback
 from app.models.alarm import Alarm
 from app.models.push_subscription import PushSubscription
+from app.models.diary_summary import DiarySummary
 
 __all__ = [
     "User",
@@ -15,4 +16,5 @@ __all__ = [
     "AiFeedback",
     "Alarm",
     "PushSubscription",
+    "DiarySummary",
 ]

@@ -52,13 +52,18 @@ async def stream_feedback(
     persona_name = persona.name if persona else "말벗"
     preset_type = persona.preset_type if persona else "empathy"
     custom_description = persona.custom_description if persona else None
+    persona_memory = persona.memory if persona else None
 
     async def generate():
         async for sentence in feedback_svc.stream_feedback(
+            db=db,
+            user_id=current_user.id,
+            diary_id=diary_id,
             diary_content=diary.content,
             persona_name=persona_name,
             preset_type=preset_type,
             custom_description=custom_description,
+            persona_memory=persona_memory,
         ):
             yield sentence + "\n"
 
@@ -78,6 +83,7 @@ async def create_feedback(
     persona_name = persona.name if persona else "말벗"
     preset_type = persona.preset_type if persona else "empathy"
     custom_description = persona.custom_description if persona else None
+    persona_memory = persona.memory if persona else None
 
     feedback = await feedback_svc.create_feedback(
         db=db,
@@ -88,6 +94,7 @@ async def create_feedback(
         persona_name=persona_name,
         preset_type=preset_type,
         custom_description=custom_description,
+        persona_memory=persona_memory,
     )
     return {"diary_id": str(diary_id), "feedback_text": feedback.feedback_text}
 
@@ -108,6 +115,7 @@ async def regenerate_feedback(
     persona_name = persona.name if persona else "말벗"
     preset_type = persona.preset_type if persona else "empathy"
     custom_description = persona.custom_description if persona else None
+    persona_memory = persona.memory if persona else None
 
     # 기존 피드백 삭제
     existing = await feedback_svc.get_feedback(db, diary_id)
@@ -125,6 +133,7 @@ async def regenerate_feedback(
         persona_name=persona_name,
         preset_type=preset_type,
         custom_description=custom_description,
+        persona_memory=persona_memory,
     )
     return {"diary_id": str(diary_id), "feedback_text": feedback.feedback_text}
 

@@ -2,9 +2,13 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import uuid
+import logging
 from app.models.ai_feedback import AiFeedback
+from app.models.diary_summary import DiarySummary
 from app.services.gpt_service import GPTService
 from typing import AsyncGenerator
+
+logger = logging.getLogger(__name__)
 
 # 교수님 피드백 반영: 페르소나별 말투 가이드라인
 PERSONA_PROMPTS = {
@@ -23,16 +27,21 @@ PERSONA_PROMPTS = {
         "사용자의 일기에서 관련된 유용한 정보나 관점을 제공하세요. "
         "객관적이고 명확하게 이야기하세요. 2~3문장으로 짧게 답하세요."
     ),
-    "custom": (
-        "당신은 사용자가 설정한 말벗입니다. "
-        "사용자의 일기에 진심 어린 반응을 해주세요. 2~3문장으로 짧게 답하세요."
-    ),
 }
+# "custom"은 PERSONA_PROMPTS에서 제외
+# preset_type="custom"일 때는 custom_description을 직접 사용해야 하므로
+# 여기 있으면 elif custom_description 분기에 절대 도달하지 못함
 
 DEFAULT_PROMPT = PERSONA_PROMPTS["empathy"]
 
 
-def build_system_prompt(persona_name: str, preset_type: str | None, custom_description: str | None) -> str:
+def build_system_prompt(
+    persona_name: str,
+    preset_type: str | None,
+    custom_description: str | None,
+    persona_memory: str | None = None,
+    memory_context: str | None = None,
+) -> str:
     if preset_type and preset_type in PERSONA_PROMPTS:
         base = PERSONA_PROMPTS[preset_type]
     elif custom_description:
@@ -46,22 +55,68 @@ def build_system_prompt(persona_name: str, preset_type: str | None, custom_descr
         base = f"당신은 {custom_description} 성격의 말벗입니다. {speech_rule} 2~3문장으로 짧게 답하세요."
     else:
         base = DEFAULT_PROMPT
-    return f"당신의 이름은 '{persona_name}'입니다. " + base
+
+    prompt = f"당신의 이름은 '{persona_name}'입니다. " + base
+
+    if persona_memory:
+        prompt += f"\n\n[반드시 기억할 것]\n{persona_memory}"
+
+    if memory_context:
+        prompt += (
+            f"\n\n[이 사용자의 최근 기록]\n{memory_context}\n"
+            "위 기록을 참고해 사용자를 더 잘 이해하고 공감해주세요. 단, 기록을 직접 언급하거나 요약하지 마세요."
+        )
+
+    return prompt
 
 
 class FeedbackService:
     def __init__(self):
         self.gpt = GPTService()
 
+    async def _get_memory_context(
+        self,
+        db: AsyncSession,
+        user_id: uuid.UUID,
+        exclude_diary_id: uuid.UUID,
+    ) -> str | None:
+        """최근 7개 일기 요약을 메모리 컨텍스트 문자열로 반환"""
+        stmt = (
+            select(DiarySummary)
+            .where(
+                DiarySummary.user_id == user_id,
+                DiarySummary.diary_id != exclude_diary_id,
+            )
+            .order_by(DiarySummary.diary_date.desc())
+            .limit(7)
+        )
+        result = await db.execute(stmt)
+        summaries = result.scalars().all()
+
+        if not summaries:
+            return None
+
+        lines = [
+            f"- ({s.diary_date.strftime('%Y-%m-%d')}) {s.summary}"
+            for s in reversed(summaries)  # 오래된 순 → 최신 순 정렬
+        ]
+        return "\n".join(lines)
+
     # ── 스트리밍 피드백 생성
     async def stream_feedback(
         self,
+        db: AsyncSession,
+        user_id: uuid.UUID,
+        diary_id: uuid.UUID,
         diary_content: str,
         persona_name: str,
         preset_type: str | None,
         custom_description: str | None,
+        persona_memory: str | None = None,
     ) -> AsyncGenerator[str, None]:
-        system_prompt = build_system_prompt(persona_name, preset_type, custom_description)
+        memory_context = await self._get_memory_context(db, user_id, diary_id)
+        system_prompt = build_system_prompt(persona_name, preset_type, custom_description, persona_memory, memory_context)
+        logger.debug("[SYSTEM PROMPT - stream]\n%s", system_prompt)
         async for sentence in self.gpt.stream_feedback(
             diary_content=diary_content,
             persona_prompt=system_prompt,
@@ -79,12 +134,15 @@ class FeedbackService:
         persona_name: str,
         preset_type: str | None,
         custom_description: str | None,
+        persona_memory: str | None = None,
     ) -> AiFeedback:
         existing = await self.get_feedback(db, diary_id)
         if existing:
             return existing
 
-        system_prompt = build_system_prompt(persona_name, preset_type, custom_description)
+        memory_context = await self._get_memory_context(db, user_id, diary_id)
+        system_prompt = build_system_prompt(persona_name, preset_type, custom_description, persona_memory, memory_context)
+        logger.debug("[SYSTEM PROMPT - create]\n%s", system_prompt)
 
         # GPT 스트리밍 결과 모아서 저장
         full_text = ""

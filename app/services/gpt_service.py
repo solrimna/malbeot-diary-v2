@@ -128,30 +128,62 @@ class GPTService:
                     {
                         "role": "system",
                         "content": (
-                            "일기 내용을 읽고 핵심 키워드를 해시태그로 추출해주세요.\n"
+                            "일기 내용을 읽고 아래 5가지 카테고리에서 키워드를 추출해주세요.\n"
+                            "카테고리:\n"
+                            "- 감정: 글쓴이가 느낀 감정 (예: 뿌듯함, 외로움, 설렘)\n"
+                            "- 사건: 일어난 일이나 행동 (예: 야근, 첫출근, 이사)\n"
+                            "- 장소: 언급된 장소 (예: 카페, 병원, 회사)\n"
+                            "- 사람: 등장한 사람 관계 (예: 친구, 상사, 가족)\n"
+                            "- 소재: 언급된 사물이나 주제 (예: 고양이, 날씨, 다이어트)\n\n"
                             "규칙:\n"
-                            "1. 3~5개의 해시태그 추출\n"
-                            "2. 한국어로 작성\n"
-                            "3. # 없이 단어만 반환\n"
-                            "4. 쉼표로 구분\n"
-                            "예시) 친구, 카페, 행복, 일상"
+                            "1. 각 카테고리에서 1~2개, 총 5~7개 추출\n"
+                            "2. 한국어, 2~5글자 단어\n"
+                            "3. # 없이 단어만, 쉼표로 구분\n"
+                            "4. 일기에 없는 내용은 만들지 말 것\n"
+                            "예시) 뿌듯함, 야근, 회사, 상사, 치킨, 퇴근길"
+                        ),
+                    },
+                    {"role": "user", "content": diary_content},
+                ],
+                max_tokens=150,
+            )
+            result = response.choices[0].message.content.strip()
+            hashtags = [tag.strip() for tag in result.split(",") if tag.strip()]
+            valid_hashtags = [
+                tag for tag in hashtags
+                if tag and len(tag) <= 10
+                and not any(kw in tag for kw in ["죄송", "죄송합니다", "제공", "이해", "어렵", "내용"])
+            ]
+            return valid_hashtags[:7]
+        except Exception as e:
+            logger.error(f"해시태그 생성 오류: {e}")
+            return []
+
+    async def generate_summary(self, diary_content: str) -> str:
+        """일기 내용을 1~2문장으로 요약 (메모리 컨텍스트 및 검색용)"""
+        try:
+            response = await client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "일기 내용을 1~2문장으로 요약해주세요.\n"
+                            "규칙:\n"
+                            "1. 글쓴이가 한 일과 느낀 감정을 중심으로 작성\n"
+                            "2. 날짜 언급 금지\n"
+                            "3. '~했다', '~였다' 체의 간결한 서술형\n"
+                            "4. GPT의 해석이나 평가 금지 — 일기에 있는 사실만\n"
+                            "예시) 야근 후 동료와 치킨을 먹으며 스트레스를 풀었다. 오랜만에 웃은 하루였다."
                         ),
                     },
                     {"role": "user", "content": diary_content},
                 ],
                 max_tokens=100,
             )
-            result = response.choices[0].message.content.strip()
-            hashtags = [tag.strip() for tag in result.split(",") if tag.strip()]
-            # 오류 문구나 비정상 태그 필터링
-            valid_hashtags = [
-                tag for tag in hashtags
-                if tag and len(tag) <= 10
-                and not any(kw in tag for kw in ["죄송", "죄송합니다", "제공", "이해", "어렵", "내용"])
-            ]
-            return valid_hashtags[:5]
+            return response.choices[0].message.content.strip()
         except Exception as e:
-            logger.error(f"해시태그 생성 오류: {e}")
-            return []
+            logger.error(f"요약 생성 오류: {e}")
+            return ""
 
 gpt_service = GPTService()

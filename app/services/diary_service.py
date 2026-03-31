@@ -6,6 +6,7 @@ import uuid
 
 from app.models.diary import Diary
 from app.models.hashtag import Hashtag, DiaryHashtag
+from app.models.diary_summary import DiarySummary
 from app.schemas.diary import DiaryCreate, DiaryUpdate
 
 
@@ -162,6 +163,44 @@ class DiaryService:
         await db.flush()
         await db.delete(diary)
         await db.commit()
+
+    # ── 요약 갱신 (내용 변경 시 기존 삭제 후 재생성) ─
+    async def update_summary(
+        self,
+        db: AsyncSession,
+        diary: Diary,
+    ) -> DiarySummary | None:
+        existing = await db.execute(
+            select(DiarySummary).where(DiarySummary.diary_id == diary.id)
+        )
+        summary = existing.scalar_one_or_none()
+        if summary:
+            await db.delete(summary)
+            await db.commit()
+        return await self.create_summary(db, diary)
+
+    # ── 요약 생성 & 저장 ──────────────────────────
+    async def create_summary(
+        self,
+        db: AsyncSession,
+        diary: Diary,
+    ) -> DiarySummary | None:
+        from app.services.gpt_service import gpt_service
+
+        summary_text = await gpt_service.generate_summary(diary.content)
+        if not summary_text:
+            return None
+
+        summary = DiarySummary(
+            user_id=diary.user_id,
+            diary_id=diary.id,
+            summary=summary_text,
+            diary_date=diary.diary_date,
+        )
+        db.add(summary)
+        await db.commit()
+        await db.refresh(summary)
+        return summary
 
     # ── 해시태그 추가 ─────────────────────────────
     async def add_hashtags(

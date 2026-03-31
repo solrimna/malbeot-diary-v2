@@ -68,6 +68,12 @@ async def create_diary(
     
     except Exception:
         pass  # 피드백 실패해도 일기 생성은 성공으로 처리
+
+    # 일기 요약 생성 (메모리 컨텍스트 및 검색용)
+    try:
+        await diary_svc.create_summary(db, diary)
+    except Exception:
+        pass  # 요약 실패해도 일기 생성은 성공으로 처리
     
    # 해시태그 자동 생성
     try:
@@ -225,6 +231,13 @@ async def update_diary(
                 await diary_svc.add_hashtags(db, diary_id, current_user.id, hashtags)
     except Exception:
         pass  # 해시태그 재생성 실패해도 수정은 성공으로 처리
+
+    # 내용 변경 시 요약 재생성
+    try:
+        if body.content is not None and body.content != original_content:
+            await diary_svc.update_summary(db, updated_diary)
+    except Exception:
+        pass  # 요약 재생성 실패해도 수정은 성공으로 처리
 
     return updated_diary
 
