@@ -10,8 +10,8 @@ class Diary(Base):
     __tablename__ = "diaries"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
-    persona_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("personas.id"), nullable=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    persona_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("personas.id", ondelete="SET NULL"), nullable=True)
     title: Mapped[str | None] = mapped_column(String(200), nullable=True)
     emotion: Mapped[str | None] = mapped_column(String(100), nullable=True)
     weather: Mapped[str | None] = mapped_column(String(100), nullable=True)

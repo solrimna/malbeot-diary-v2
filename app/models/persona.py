@@ -10,7 +10,7 @@ class Persona(Base):
     __tablename__ = "personas"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     preset_type: Mapped[str | None] = mapped_column(String(20), nullable=True)   # empathy | advice | custom
     custom_description: Mapped[str | None] = mapped_column(Text, nullable=True)

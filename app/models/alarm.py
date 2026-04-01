@@ -11,7 +11,7 @@ class Alarm(Base):
     __tablename__ = "alarms"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     alarm_time = Column(Time, nullable=False)
     repeat_days = Column(String, nullable=False)  # 예: MON,WED,FRI
     is_enabled = Column(Boolean, default=True, nullable=False)
