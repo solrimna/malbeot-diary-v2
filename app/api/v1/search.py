@@ -5,10 +5,10 @@ from pydantic import BaseModel
 from app.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
-from app.services.search_service import SearchService
+from app.services.search_service import search_service
 
 router = APIRouter()
-search_svc = SearchService()
+search_svc = search_service
 
 
 class SearchRequest(BaseModel):

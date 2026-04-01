@@ -416,7 +416,7 @@ async function DiarySearch() {
         });
 
         // AI 답변 표시
-        let html = `<p class="mb-3">${escapeHtml(response.answer)}</p>`;
+        let html = `<p class="mb-3">${escapeHtml(response.answer).replace(/\n/g, '<br>')}</p>`;
 
         // 관련 일기 목록 표시
         if (response.results && response.results.length > 0) {
