@@ -32,6 +32,52 @@
 
 ---
 
+## 구조도
+```
+  ┌─────────────────────────────────────────────────────────────┐
+  │                        Client (Browser)                      │
+  │  index  login  diary_write  diary_read  my-diary  profile   │
+  │  ai-persona  persona-onboarding                             │
+  │  js/ (api.js · auth.js · diary.js · alarm.js · stt.js)     │
+  │  sw.js (Service Worker / Web Push)                          │
+  └────────────────────────┬────────────────────────────────────┘
+                           │ HTTPS
+  ┌────────────────────────▼────────────────────────────────────┐
+  │                     nginx (443/80)                           │
+  │  - HTTP → HTTPS 리다이렉트                                   │
+  │  - WebSocket Upgrade 헤더 처리                               │
+  │  - Let's Encrypt SSL                                         │
+  └────────────────────────┬────────────────────────────────────┘
+                           │ proxy_pass :8000
+  ┌────────────────────────▼────────────────────────────────────┐
+  │                   FastAPI app (:8000)                        │
+  │                                                             │
+  │  main.py                                                    │
+  │  ├── lifespan: DB 초기화 + 알람 스케줄러 시작/종료           │
+  │  ├── /api/v1 ── router.py                                   │
+  │  │   ├── /auth      → auth.py      → auth_service.py       │
+  │  │   ├── /diaries   → diary.py     → diary_service.py      │
+  │  │   ├── /personas  → persona.py   → gpt_service.py        │
+  │  │   ├── /feedback  → feedback.py  → feedback_service.py   │
+  │  │   ├── /voice     → voice.py     → stt/tts_service.py    │
+  │  │   ├── /alarms    → alarm.py     → alarm_service.py      │
+  │  │   └── /search    → search.py    → search_service.py     │
+  │  └── /  (StaticFiles → frontend/)                          │
+  └──────┬──────────────┬───────────────┬───────────────────────┘
+         │              │               │
+  ┌──────▼──────┐ ┌─────▼──────┐ ┌─────▼──────────────────────┐
+  │ PostgreSQL  │ │   Redis    │ │   External APIs             │
+  │             │ │            │ │  - OpenAI (GPT · STT · TTS) │
+  │ users       │ │ 캐시/세션  │ │  - Google TTS               │
+  │ diaries     │ │            │ │  - Web Push (pywebpush)     │
+  │ personas    │ └────────────┘ └────────────────────────────┘
+  │ ai_feedbacks│
+  │ alarms      │
+  │ push_subs   │
+  └─────────────┘
+```
+---
+
 ## 시작하기
 
 ### 1. 저장소 clone
