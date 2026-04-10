@@ -182,7 +182,7 @@ AI 기반 감성 일기 서비스. 음성 입력, AI 피드백, 맞춤형 말벗
 | 백엔드 | FastAPI 0.115, Uvicorn, SQLAlchemy 2.0 (async) |
 | 데이터베이스 | PostgreSQL (운영) / SQLite (개발), Alembic |
 | AI / LLM | OpenAI GPT-4o-mini, OpenAI TTS |
-| 음성 인식 | Azure Cognitive Services Speech |
+| 음성 인식 | Azure Cognitive Services Speech / Web Speech API |
 | 캐시 | Redis 7 (선택) |
 | 스케줄러 | APScheduler 3.10.4 |
 | 웹 푸시 | pywebpush 2.3.0 |
