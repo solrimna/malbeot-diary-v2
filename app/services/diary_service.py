@@ -1,12 +1,13 @@
 # 담당 : A팀원 유가영
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc
-from datetime import date
 import uuid
+from datetime import date
+
+from sqlalchemy import desc, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.diary import Diary
-from app.models.hashtag import Hashtag, DiaryHashtag
 from app.models.diary_summary import DiarySummary
+from app.models.hashtag import DiaryHashtag, Hashtag
 from app.schemas.diary import DiaryCreate, DiaryUpdate
 
 
@@ -143,9 +144,10 @@ class DiaryService:
         db: AsyncSession,
         diary: Diary,
     ) -> None:
-        from app.models.hashtag import DiaryHashtag
-        from app.models.ai_feedback import AiFeedback
         from sqlalchemy import select as sa_select
+
+        from app.models.ai_feedback import AiFeedback
+        from app.models.hashtag import DiaryHashtag
 
         # 연결된 해시태그 먼저 삭제
         stmt_dh = sa_select(DiaryHashtag).where(DiaryHashtag.diary_id == diary.id)

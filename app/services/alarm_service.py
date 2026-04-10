@@ -1,10 +1,10 @@
+import json
 import uuid
 from datetime import datetime
-import json
 
+from pywebpush import WebPushException, webpush
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from pywebpush import webpush, WebPushException
 
 from app.config import get_settings
 from app.models.alarm import Alarm

@@ -1,5 +1,6 @@
 from fastapi import APIRouter
-from app.api.v1 import auth, diary, persona, feedback, voice, alarm, search
+
+from app.api.v1 import alarm, auth, diary, feedback, persona, search, voice
 
 api_router = APIRouter()
 

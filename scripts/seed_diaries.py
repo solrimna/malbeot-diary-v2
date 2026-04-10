@@ -9,16 +9,15 @@
     python -m scripts.seed_diaries --clear      # 해당 유저 일기 전체 삭제 후 재생성
 """
 
-import asyncio
 import argparse
+import asyncio
 from datetime import date, timedelta
 
-from sqlalchemy import select, delete
+from sqlalchemy import delete, select
 
 from app.database import AsyncSessionLocal
-from app.models.user import User
 from app.models.diary import Diary
-
+from app.models.user import User
 
 SAMPLE_CONTENTS = [
     "오늘은 날씨가 맑아서 기분이 좋았다. 산책을 오래 했다.",
@@ -70,7 +69,7 @@ async def seed(count: int, clear: bool) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser() 
+    parser = argparse.ArgumentParser()
     parser.add_argument("--count", type=int, default=30, help="생성할 일기 수 (기본 30)")
     parser.add_argument("--clear", action="store_true", help="기존 일기 삭제 후 재생성")
     args = parser.parse_args()

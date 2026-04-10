@@ -2,9 +2,9 @@ import logging
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
+from app.config import get_settings
 from app.database import AsyncSessionLocal
 from app.services.alarm_service import process_due_alarms
-from app.config import get_settings
 
 logger = logging.getLogger(__name__)
 

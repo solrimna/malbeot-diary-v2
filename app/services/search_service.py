@@ -39,20 +39,21 @@
 #   A. "{활동}안함" 태그 보유 → 일기에 명시적으로 못 했다고 적은 날
 #   B. 관련 태그 아예 없음  → 언급 자체를 안 한 날 (실제와 다를 수 있음)
 
-from datetime import date, timedelta
+import logging
 import re
 import uuid
-import logging
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_
+from datetime import date, timedelta
 
-logger = logging.getLogger(__name__)
 from openai import AsyncOpenAI
+from sqlalchemy import or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.config import get_settings
 from app.models.diary import Diary
 from app.models.diary_summary import DiarySummary
-from app.models.hashtag import Hashtag, DiaryHashtag
+from app.models.hashtag import DiaryHashtag, Hashtag
 
+logger = logging.getLogger(__name__)
 settings = get_settings()
 client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 

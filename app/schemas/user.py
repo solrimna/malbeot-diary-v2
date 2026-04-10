@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field
-from datetime import datetime
 import uuid
+from datetime import datetime
+
+from pydantic import BaseModel, Field
 
 
 # ── 회원가입 요청 데이터 ──────────────────────────

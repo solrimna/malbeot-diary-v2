@@ -1,10 +1,13 @@
 import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from contextlib import asynccontextmanager
-from app.services.alarm_scheduler import start_scheduler, stop_scheduler
-from app.database import engine, Base
+
 from app.api.v1.router import api_router
+from app.database import Base, engine
+from app.services.alarm_scheduler import start_scheduler, stop_scheduler
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
