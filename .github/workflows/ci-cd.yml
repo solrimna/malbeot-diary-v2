@@ -7,6 +7,7 @@ on:
     branches: [main]
 
 jobs:
+  # PR 및 모든 푸시: SQLite로 빠르게 테스트
   test:
     runs-on: ubuntu-latest
     steps:
@@ -20,13 +21,53 @@ jobs:
         run: pip install uv
 
       - name: Install dependencies
-        run: uv pip install --system -r requirements.txt
+        run: |
+          uv pip install --system -r requirements.txt
+          uv pip install --system pytest==8.3.4 pytest-asyncio==0.24.0
 
-      - name: Run tests
+      - name: Run tests (SQLite)
+        run: pytest
+
+  # main 브랜치 푸시: 배포 전 PostgreSQL로 검증
+  test-postgres:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_malbeot
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: |
+          uv pip install --system -r requirements.txt
+          uv pip install --system pytest==8.3.4 pytest-asyncio==0.24.0 asyncpg==0.30.0
+
+      - name: Run tests (PostgreSQL)
+        env:
+          TEST_DATABASE_URL: postgresql+asyncpg://test:test@localhost:5432/test_malbeot
         run: pytest
 
   deploy:
-    needs: test
+    needs: [test, test-postgres]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:

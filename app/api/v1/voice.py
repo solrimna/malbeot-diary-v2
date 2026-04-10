@@ -1,20 +1,29 @@
 # 담당: 나솔림 (STT/TTS/GPT 스트리밍 파이프라인)
-# (O): POST /stt         - 음성 파일 → 텍스트 
-# (O): POST /tts         - 텍스트 → 음성 파일 (OpenAI TTS)  
+# (O): POST /stt         - 음성 파일 → 텍스트
+# (O): POST /tts         - 텍스트 → 음성 파일 (OpenAI TTS)
 # (O): POST /tts/stream  - GPT 응답 스트리밍 → TTS 파이프라인
 
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
-from fastapi.responses import StreamingResponse, Response
-from fastapi import WebSocket, WebSocketDisconnect  # azure websocket 통신을 위해 추가
-import asyncio                                      # 비동기 이벤트 루프 처리를 위해 추가
+import asyncio  # 비동기 이벤트 루프 처리를 위해 추가
+import logging
+
+from fastapi import (  # azure websocket 통신을 위해 추가
+    APIRouter,
+    Depends,
+    File,
+    HTTPException,
+    UploadFile,
+    WebSocket,
+    WebSocketDisconnect,
+)
+from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
-from app.services.stt_service import stt_service
-from app.services.tts_service import tts_service
-from app.services.gpt_service import gpt_service
-from app.services.redis_service import get_tts_stats
+
 from app.config import get_settings
 from app.core.security import decode_access_token, get_current_user
-import logging
+from app.services.gpt_service import gpt_service
+from app.services.redis_service import get_tts_stats
+from app.services.stt_service import stt_service
+from app.services.tts_service import tts_service
 
 settings = get_settings()
 

@@ -1,12 +1,14 @@
 # 담당 : A팀원 유가영
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-import uuid
 import logging
+import uuid
+from collections.abc import AsyncGenerator
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.ai_feedback import AiFeedback
 from app.models.diary_summary import DiarySummary
 from app.services.gpt_service import GPTService
-from typing import AsyncGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +115,7 @@ class FeedbackService:
         preset_type: str | None,
         custom_description: str | None,
         persona_memory: str | None = None,
-    ) -> AsyncGenerator[str, None]:
+    ) -> AsyncGenerator[str]:
         memory_context = await self._get_memory_context(db, user_id, diary_id)
         system_prompt = build_system_prompt(persona_name, preset_type, custom_description, persona_memory, memory_context)
         logger.debug("[SYSTEM PROMPT - stream]\n%s", system_prompt)

@@ -12,6 +12,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from openai import AsyncOpenAI
+
 from app.config import get_settings
 
 SAMPLE_TEXT = "안녕하세요, 저는 오늘 하루도 당신 곁에 있을게요. 일기를 함께 써봐요."

@@ -1,17 +1,18 @@
 # 담당 : A팀원 유가영
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import date
+import logging
 import time
 import uuid
+from datetime import date
 
-from app.database import get_db, AsyncSessionLocal
-from app.schemas.diary import DiaryCreate, DiaryUpdate, DiaryResponse
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.security import get_current_user
+from app.database import AsyncSessionLocal, get_db
+from app.models.user import User
+from app.schemas.diary import DiaryCreate, DiaryResponse, DiaryUpdate
 from app.services.diary_service import DiaryService
 from app.services.feedback_service import FeedbackService
-from app.core.security import get_current_user
-from app.models.user import User
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +25,9 @@ async def _bg_create_summary(diary_id: uuid.UUID, content: str, diary_date, user
     t = time.time()
     try:
         async with AsyncSessionLocal() as db:
-            from app.models.diary import Diary
             from sqlalchemy import select as sa_select
+
+            from app.models.diary import Diary
             result = await db.execute(sa_select(Diary).where(Diary.id == diary_id))
             diary = result.scalar_one_or_none()
             if diary:
@@ -67,8 +69,9 @@ async def create_diary(
     # 일기 생성 후 AI 피드백 자동 생성 (blocking - read.html에서 즉시 필요)
     t_feedback = time.time()
     try:
-        from app.models.persona import Persona
         from sqlalchemy import select as sa_select
+
+        from app.models.persona import Persona
         persona = None
         if diary.persona_id:
             result = await db.execute(sa_select(Persona).where(Persona.id == diary.persona_id))
@@ -129,8 +132,9 @@ async def get_diary_hashtags(
     if not diary:
         raise HTTPException(status_code=404, detail="일기를 찾을 수 없습니다.")
 
-    from app.models.hashtag import Hashtag, DiaryHashtag
     from sqlalchemy import select as sa_select
+
+    from app.models.hashtag import DiaryHashtag, Hashtag
     stmt = (
         sa_select(Hashtag)
         .join(DiaryHashtag, Hashtag.id == DiaryHashtag.hashtag_id)
@@ -152,8 +156,9 @@ async def delete_diary_hashtag(
     if not diary:
         raise HTTPException(status_code=404, detail="일기를 찾을 수 없습니다.")
 
-    from app.models.hashtag import Hashtag, DiaryHashtag
     from sqlalchemy import select as sa_select
+
+    from app.models.hashtag import DiaryHashtag, Hashtag
 
     # 해시태그 조회
     stmt = (
@@ -193,8 +198,9 @@ async def update_diary(
 
     # 일기 수정 후 AI 피드백 자동 갱신
     try:
-        from app.models.persona import Persona
         from sqlalchemy import select as sa_select
+
+        from app.models.persona import Persona
         persona = None
         if updated_diary.persona_id:
             result = await db.execute(sa_select(Persona).where(Persona.id == updated_diary.persona_id))
@@ -202,7 +208,7 @@ async def update_diary(
 
 #        logger.info(f"수정 전 : {original_persona_id}")
 #        logger.info(f"수정 후 : {updated_diary.persona_id}")
-        
+
         # 일기 내용 또는 페르소나가 변경된 경우에만 피드백 재생성
         content_changed = body.content is not None and body.content != original_content
         persona_changed = updated_diary.persona_id is not None and updated_diary.persona_id != original_persona_id
@@ -234,9 +240,10 @@ async def update_diary(
       # 내용 변경 시 해시태그 재생성
     try:
         if body.content is not None and body.content != original_content:
-            from app.services.gpt_service import gpt_service
-            from app.models.hashtag import DiaryHashtag
             from sqlalchemy import select as sa_select2
+
+            from app.models.hashtag import DiaryHashtag
+            from app.services.gpt_service import gpt_service
 
             # 기존 해시태그 연결 삭제
             stmt_del = sa_select2(DiaryHashtag).where(DiaryHashtag.diary_id == diary_id)

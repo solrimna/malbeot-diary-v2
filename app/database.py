@@ -1,6 +1,7 @@
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import event
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase
+
 from app.config import get_settings
 
 settings = get_settings()
@@ -13,7 +14,6 @@ engine = create_async_engine(
 # SQLite는 기본적으로 FK 비활성화 > 로컬 테스트용으로 강제 활성화
 # 로컬은 SQLite, 서버는 Postgres 로 동작하기에 동일한 테스트 환경을 조장하기 위해서 활성화 코드를 추가
 if settings.DATABASE_URL.startswith("sqlite"):
-    from sqlalchemy import text
 
     @event.listens_for(engine.sync_engine, "connect")
     def set_sqlite_fk_pragma(dbapi_conn, connection_record):

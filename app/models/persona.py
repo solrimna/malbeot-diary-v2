@@ -1,8 +1,10 @@
 # 담당: A팀원
 import uuid
 from datetime import datetime
-from sqlalchemy import String, Text, Boolean, DateTime, ForeignKey, func
+
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
+
 from app.database import Base
 
 

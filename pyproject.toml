@@ -40,7 +40,38 @@ dependencies = [
 dev = [
     "pytest==8.3.4",
     "pytest-asyncio==0.24.0",
+    "ruff>=0.9.0",
 ]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes (미사용 변수/임포트 등)
+    "I",   # isort (import 정렬)
+    "B",   # flake8-bugbear (잠재적 버그)
+    "UP",  # pyupgrade (최신 파이썬 문법 권장)
+]
+ignore = [
+    "E501",  # line too long (line-length로 관리)
+    "B008",  # FastAPI Depends 패턴 허용
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+pythonpath = ["."]
 
 [build-system]
 requires = ["hatchling"]
