@@ -168,10 +168,10 @@ AI 기반 감성 일기 서비스. 음성 입력, AI 피드백, 맞춤형 말벗
 | 로그인 | `login.html` | 인증 폼 |
 | 일기 작성 | `diary_write.html` | 음성 입력, 감정/날씨 선택, 실시간 STT |
 | 일기 읽기 | `diary_read.html` | 일기 + AI 피드백 + TTS 재생 |
-| 내 일기 | `my-diary.html` | 달력/목록 뷰, 해시태그 필터 |
-| 말벗 관리 | `ai-persona.html` | 페르소나 선택 · 설정 UI |
+| 내 일기 | `my-diary.html` | 책장 뷰, 해시태그 필터, AI 기억 검색 |
+| 나의 현황 | `profile.html` | 월별 달력으로 일기 기록 확인, 로그아웃 |
+| 설정 | `settings.html` | AI 페르소나 관리 + 알람 설정 (좌측 메뉴 탭) |
 | 온보딩 | `persona-onboarding.html` | 맞춤 페르소나 생성 Q&A |
-| 프로필 | `profile.html` | 계정 설정 |
 
 ---
 

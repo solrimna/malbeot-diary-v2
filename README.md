@@ -1,6 +1,7 @@
 # 하루.commit() - 말벗 AI 일기장
 
 > 음성 입력과 AI 공감 피드백이 결합된 감성 일기 서비스
+> 팀 프로젝트(v1) 종료 후 개인 개선 작업 중인 버전입니다. — [원본 저장소](https://github.com/solrimna/malbeot-diary)
 
 **라이브 데모:** https://malbeot.duckdns.org/
 
@@ -21,6 +22,15 @@
 | 웹 푸시 알림 | Service Worker 기반 PWA 푸시 알림 |
 
 자세한 기능 명세는 [docs/features.md](docs/features.md)를 참고해주세요.
+
+---
+
+## 변경 이력
+
+- 2026-04-11 settings.html 신규 생성 — AI 페르소나·알람 좌측 메뉴로 통합
+- 2026-04-11 profile.html 나의 현황으로 명칭 변경, 달력만 표시
+- 2026-04-11 전 페이지 nav 3항목 통일
+- 2026-04-11 config.py extra=ignore 추가 — Docker secrets 환경변수 충돌 방지
 
 ---
 
@@ -47,7 +57,7 @@
   ┌─────────────────────────────────────────────────────────────┐
   │                        Client (Browser)                      │
   │  index  login  diary_write  diary_read  my-diary  profile   │
-  │  ai-persona  persona-onboarding                             │
+  │  settings  persona-onboarding                              │
   │  js/ (api.js · auth.js · diary.js · alarm.js · stt.js)     │
   │  stt.js: Azure STT ← WebSocket / Web Speech API ← 브라우저 │
   │  sw.js (Service Worker / Web Push)                          │
@@ -192,3 +202,5 @@ python -c "from pywebpush import Vapid; v = Vapid(); v.generate_keys(); print('P
 |------|------|
 | [docs/features.md](docs/features.md) | 전체 기능 명세 및 API 엔드포인트 |
 | [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) | Git 작업 가이드 및 브랜치 전략 |
+
+---

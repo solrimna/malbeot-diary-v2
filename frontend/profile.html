@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>내 프로필 - "하루" commit()</title>
+    <title>나의 현황 - "하루" commit()</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
@@ -79,9 +79,9 @@
     <!-- 드롭다운 네비게이션 -->
     <nav class="profile-nav profile-layer absolute top-0 left-0 w-full text-white/80 shadow-2xl z-40 transform -translate-y-full transition-transform duration-500 ease-in-out peer-hover:translate-y-0 hover:translate-y-0">
         <div class="w-full max-w-7xl mx-auto flex justify-between items-center px-8 md:px-16 py-6 font-kr">
-            <a href="index.html"      class="text-sm md:text-lg font-light tracking-widest hover:text-white transition-colors duration-300">메인으로</a>
+            <a href="diary_write.html" class="text-sm md:text-lg font-light tracking-widest hover:text-white transition-colors duration-300">일기 작성하기</a>
             <a href="my-diary.html"   class="text-sm md:text-lg font-light tracking-widest hover:text-white transition-colors duration-300">나의 일기장</a>
-            <a href="ai-persona.html" class="text-sm md:text-lg font-light tracking-widest hover:text-white transition-colors duration-300">AI 페르소나 관리</a>
+            <a href="settings.html"   class="text-sm md:text-lg font-light tracking-widest hover:text-white transition-colors duration-300">설정</a>
         </div>
     </nav>
 
@@ -90,10 +90,10 @@
 
             <!-- 헤더 -->
             <section class="profile-hero">
-                <p class="font-script text-2xl md:text-3xl text-white/70 mb-3">My profile</p>
-                <h1 class="profile-hero-title text-3xl md:text-5xl tracking-tight font-semibold mb-4">내 프로필</h1>
+                <p class="font-script text-2xl md:text-3xl text-white/70 mb-3">My status</p>
+                <h1 class="profile-hero-title text-3xl md:text-5xl tracking-tight font-semibold mb-4">나의 현황</h1>
                 <div class="profile-hero-line"></div>
-                <p class="profile-hero-copy">달력과 알람을 탭에서 나눠서 관리할 수 있어요.</p>
+                <p class="profile-hero-copy">일기를 쓴 날을 달력으로 확인할 수 있어요.</p>
             </section>
 
             <!-- 사이드바 + 메인 콘텐츠 래퍼 -->
@@ -128,97 +128,29 @@
                 <!-- ─── 오른쪽 메인 콘텐츠 ─── -->
                 <div class="profile-main-content">
                     <section class="profile-tabs-card">
-                        <div class="profile-tabs">
-                            <button id="profile-tab-calendar" type="button" class="profile-tab-button is-active" data-tab-target="calendar">달력</button>
-                            <button id="profile-tab-alarm"    type="button" class="profile-tab-button"           data-tab-target="alarm">알람</button>
-                        </div>
-
-                        <!-- 달력 패널 -->
-                        <div id="profile-panel-calendar" class="profile-tab-panel">
-                            <section class="profile-calendar-card">
-                                <div class="profile-calendar-header">
-                                    <div>
-                                        <p class="profile-calendar-caption">Diary calendar</p>
-                                        <div class="profile-calendar-selects">
-                                            <select id="profile-calendar-year"  class="profile-calendar-select"></select>
-                                            <select id="profile-calendar-month" class="profile-calendar-select"></select>
-                                        </div>
+                        <section class="profile-calendar-card">
+                            <div class="profile-calendar-header">
+                                <div>
+                                    <p class="profile-calendar-caption">Diary calendar</p>
+                                    <div class="profile-calendar-selects">
+                                        <select id="profile-calendar-year"  class="profile-calendar-select"></select>
+                                        <select id="profile-calendar-month" class="profile-calendar-select"></select>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="profile-calendar-weekdays">
-                                    <span>일</span><span>월</span><span>화</span>
-                                    <span>수</span><span>목</span><span>금</span><span>토</span>
-                                </div>
+                            <div class="profile-calendar-weekdays">
+                                <span>일</span><span>월</span><span>화</span>
+                                <span>수</span><span>목</span><span>금</span><span>토</span>
+                            </div>
 
-                                <div id="profile-calendar-grid" class="profile-calendar-grid"></div>
+                            <div id="profile-calendar-grid" class="profile-calendar-grid"></div>
 
-                                <div class="profile-calendar-legend">
-                                    <span class="profile-legend-dot"></span>
-                                    <span>일기 작성 완료</span>
-                                </div>
-                            </section>
-                        </div>
-
-                        <!-- 알람 패널 -->
-                        <div id="profile-panel-alarm" class="profile-tab-panel hidden">
-                            <section class="profile-alarm-card">
-
-                                <!-- 뷰 1: 알람 목록 -->
-                                <div id="alarm-view-list">
-                                    <div class="profile-alarm-header">
-                                        <div>
-                                            <p class="profile-calendar-caption">Alarm settings</p>
-                                            <h2 class="profile-hero-title text-2xl font-semibold">알람 설정</h2>
-                                        </div>
-                                        <button type="button" id="add-alarm-btn" class="profile-calendar-nav">+ 알람 추가</button>
-                                    </div>
-                                    <div id="alarm-list" class="flex flex-col gap-3 text-white/80 text-sm">
-                                        <p>등록된 알람이 없습니다.</p>
-                                    </div>
-                                </div>
-
-                                <!-- 뷰 2: 알람 폼 -->
-                                <div id="alarm-view-form" class="hidden">
-                                    <div class="flex items-center gap-4 mb-10">
-                                        <button type="button" id="back-to-list-btn" class="profile-calendar-nav">← 뒤로</button>
-                                        <h2 id="alarm-form-title" class="text-xl font-semibold text-white">알람 추가</h2>
-                                    </div>
-
-                                    <div class="flex flex-col items-center gap-3 mb-10">
-                                        <p class="profile-calendar-caption">알람 시간</p>
-                                        <div class="alarm-time-selects">
-                                            <select id="alarm-ampm" class="profile-calendar-select">
-                                                <option value="AM">오전</option>
-                                                <option value="PM">오후</option>
-                                            </select>
-                                            <select id="alarm-hour" class="profile-calendar-select"></select>
-                                            <select id="alarm-minute" class="profile-calendar-select"></select>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex flex-col items-center gap-4 mb-10">
-                                        <p class="profile-calendar-caption">반복 요일</p>
-                                        <div class="weekday-group flex gap-2 flex-wrap justify-center">
-                                            <button type="button" id="day-all" class="profile-day-pill profile-day-pill-all">매일</button>
-                                            <button type="button" id="day-mon" data-day="MON" class="profile-day-pill">월</button>
-                                            <button type="button" id="day-tue" data-day="TUE" class="profile-day-pill">화</button>
-                                            <button type="button" id="day-wed" data-day="WED" class="profile-day-pill">수</button>
-                                            <button type="button" id="day-thu" data-day="THU" class="profile-day-pill">목</button>
-                                            <button type="button" id="day-fri" data-day="FRI" class="profile-day-pill">금</button>
-                                            <button type="button" id="day-sat" data-day="SAT" class="profile-day-pill">토</button>
-                                            <button type="button" id="day-sun" data-day="SUN" class="profile-day-pill">일</button>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex justify-center gap-3">
-                                        <button type="button" id="save-alarm-btn" class="profile-calendar-nav">저장</button>
-                                        <button type="button" id="cancel-alarm-btn" class="profile-calendar-nav">취소</button>
-                                    </div>
-                                </div>
-
-                            </section>
-                        </div>
+                            <div class="profile-calendar-legend">
+                                <span class="profile-legend-dot"></span>
+                                <span>일기 작성 완료</span>
+                            </div>
+                        </section>
                     </section>
                 </div>
 
@@ -229,6 +161,5 @@
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/frontend.js"></script>
-    <script src="js/alarm.js"></script>
 </body>
 </html>
