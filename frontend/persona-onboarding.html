@@ -16,10 +16,10 @@
         body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
-            background-color: #000;
+            background-color: #050814;
         }
 
-        #us-background {
+        #tsparticles {
             position: fixed; inset: 0; z-index: 0;
         }
 
@@ -187,7 +187,7 @@
 </head>
 <body class="min-h-screen relative font-kr">
 
-    <div id="us-background" data-us-project="ZnNikMOUWaAR1UzFsvqp"></div>
+    <div id="tsparticles"></div>
 
     <main class="ob-layer min-h-screen flex items-center justify-center px-4 py-12">
         <div class="w-full max-w-lg">
@@ -588,9 +588,10 @@
             }
         } catch (_) {}
 
-        if (typeof initUnicornStudio === "function") initUnicornStudio();
         renderVoiceGrid();
         obShowStep(0);
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+    <script src="js/particles.js"></script>
 </body>
 </html>

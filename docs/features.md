@@ -188,6 +188,7 @@ AI 기반 감성 일기 서비스. 음성 입력, AI 피드백, 맞춤형 말벗
 
 - `js/nav.js` — `<app-nav>` Web Component: 일기 작성하기 / 나의 일기장 / AI로 기억 찾기 / 프로필 아이콘(드롭다운: 닉네임 표시, 프로필·나의 현황·설정·로그아웃)
 - `js/search.js` — AI 기억 검색 모달 (IIFE 방식, 모든 보호 페이지에서 공유)
+- `js/particles.js` — tsParticles 별 파티클 배경 (전 페이지 공통 적용, Unicorn Studio 대체)
 
 ---
 
@@ -202,6 +203,6 @@ AI 기반 감성 일기 서비스. 음성 입력, AI 피드백, 맞춤형 말벗
 | 캐시 | Redis 7 (선택) |
 | 스케줄러 | APScheduler 3.10.4 |
 | 웹 푸시 | pywebpush 2.3.0 |
-| 프론트엔드 | Vanilla JS (ES6+), Tailwind CSS, Unicorn Studio |
+| 프론트엔드 | Vanilla JS (ES6+), Tailwind CSS, tsParticles |
 | DevOps | Docker, Docker Compose, Nginx, Let's Encrypt |
 | 인프라 | Terraform, AWS (EC2, RDS), DuckDNS |

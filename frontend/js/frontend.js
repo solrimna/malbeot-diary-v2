@@ -161,13 +161,6 @@ function disableAutocompleteOutsideLogin() {
 }
 
 /* =========================
-   Unicorn Studio Global Init
-========================= */
-function initUnicornStudio() {
-    !function(){var u=window.UnicornStudio;if(u&&u.init){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){u.init()})}else{u.init()}}else{window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.1.5/dist/unicornStudio.umd.js",i.onload=function(){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){UnicornStudio.init()})}else{UnicornStudio.init()}},(document.head||document.body).appendChild(i)}}();
-}
-
-/* =========================
    login.html
 ========================= */
 function toggleForm(type) {
@@ -1069,8 +1062,6 @@ window.addEventListener("DOMContentLoaded", () => {
     disableAutocompleteOutsideLogin();
     initPersonaPage();
     initProfilePage();
-    initUnicornStudio(); // 전역으로 통합된 유니콘 스튜디오 로드 함수 호출
-
     // profile.html 렌더링 스크립트 실행
     const body = document.body;
     if (body && body.classList.contains("page-profile")) {

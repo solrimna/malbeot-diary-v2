@@ -27,6 +27,8 @@
 
 ## 변경 이력
 
+- 2026-04-12 Unicorn Studio → tsParticles 교체 — 외부 의존 제거, 별 파티클 배경 자체 구현
+- 2026-04-12 사용자 닉네임 조회 localStorage → /users/me API로 통일 (profile.html, index.html)
 - 2026-04-12 GET/PATCH/DELETE /users/me API 추가 — 닉네임·비밀번호 수정, 회원 탈퇴
 - 2026-04-12 my_profile.html 신규 생성 — 프로필 수정·로그아웃·회원 탈퇴 통합
 - 2026-04-12 nav를 `<app-nav>` Web Component로 리팩토링 — 전 페이지 공통 적용
@@ -50,7 +52,7 @@
 | Cache | Redis 7 |
 | Scheduler | APScheduler 3.10.4 |
 | Web Push | pywebpush 2.3.0 |
-| Frontend | Vanilla JS (ES6+), Tailwind CSS, Unicorn Studio |
+| Frontend | Vanilla JS (ES6+), Tailwind CSS, tsParticles |
 | DevOps | Docker, Docker Compose, Nginx, Let's Encrypt |
 | Infra | Terraform, AWS (EC2, RDS), DuckDNS |
 
