@@ -690,14 +690,12 @@ async function initProfilePage() {
     await fetchAndRenderCalendar(year, month);
 }
 
-function fillNickname() {
+async function fillNickname() {
     var el = document.getElementById("profile-nickname");
     if (!el) return;
     try {
-        var raw  = localStorage.getItem("auth_user");
-        var user = raw ? JSON.parse(raw) : null;
-        var name = user && user.nickname ? user.nickname.trim() : "";
-        el.textContent = name || "—";
+        var user = await apiRequest("/users/me", { method: "GET" });
+        el.textContent = (user && user.nickname) ? user.nickname.trim() : "—";
     } catch (_) {
         el.textContent = "—";
     }
@@ -1076,7 +1074,7 @@ window.addEventListener("DOMContentLoaded", () => {
     // profile.html 렌더링 스크립트 실행
     const body = document.body;
     if (body && body.classList.contains("page-profile")) {
-        fillNickname();
+        fillNickname();  // async, 독립 실행
         setTimeout(function () { waitAndRenderAttendance(20); }, 1000);
     }
 

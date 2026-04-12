@@ -107,21 +107,22 @@ function initAuthNav() {
     authLink.href = "login.html";
 }
 
-function initIndexGreeting() {
+async function initIndexGreeting() {
     const greeting = document.getElementById("index-user-greeting");
     if (!greeting || !getAccessToken()) {
         return;
     }
 
-    const user = getAuthUser();
-    const nickname = user?.nickname?.trim();
+    try {
+        const user = await apiRequest("/users/me", { method: "GET" });
+        const nickname = user?.nickname?.trim();
+        if (!nickname) return;
 
-    if (!nickname) {
-        return;
+        greeting.textContent = `안녕하세요 ${nickname}님!\n오늘 하루를 남겨보세요!`;
+        greeting.classList.remove("hidden");
+    } catch (_) {
+        // 미로그인 또는 토큰 만료 시 인사 미표시
     }
-
-    greeting.textContent = `안녕하세요 ${nickname}님!\n오늘 하루를 남겨보세요!`;
-    greeting.classList.remove("hidden");
 }
 
 function checkPasswordMatch() {
