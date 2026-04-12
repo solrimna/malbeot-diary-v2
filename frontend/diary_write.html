@@ -42,27 +42,19 @@
 <body class="page-diary-detail min-h-screen relative font-kr">
 
     <div id="us-background" data-us-project="ZnNikMOUWaAR1UzFsvqp"></div>
+    <app-nav></app-nav>
 
-    <div class="diary-layer absolute top-0 left-0 w-full h-16 z-30 peer"></div>
-
-    <nav class="diary-nav diary-layer absolute top-0 left-0 w-full text-[#c8d8f8] shadow-2xl z-40 transform -translate-y-full transition-transform duration-500 ease-in-out peer-hover:translate-y-0 hover:translate-y-0">
-        <div class="w-full max-w-7xl mx-auto flex justify-between items-center px-8 md:px-16 py-6 font-kr">
-            <a href="my-diary.html" class="text-sm md:text-lg font-light tracking-widest hover:text-white transition-colors duration-300">← 나의 일기장</a>
-            <a href="profile.html"  class="text-sm md:text-lg font-light tracking-widest hover:text-white transition-colors duration-300">나의 현황</a>
-            <a href="settings.html" class="text-sm md:text-lg font-light tracking-widest hover:text-white transition-colors duration-300">설정</a>
-        </div>
-    </nav>
 
     <main class="diary-layer min-h-screen px-6 py-24 md:px-10 lg:px-16">
         <div class="diary-detail-shell">
-            <div class="text-center mb-12">
-                <p class="font-script text-2xl md:text-3xl text-white/70 mb-3">Write your day</p>
-                <h1 class="text-3xl md:text-5xl tracking-tight text-white font-semibold mb-4">
+            <div class="text-left mb-10">
+                <p class="font-script text-lg md:text-xl text-white/60 mb-2">Write your day</p>
+                <h2 class="text-xl md:text-2xl tracking-tight text-white font-semibold mb-3">
                     오늘의 일기 작성
-                </h1>
-                <div class="w-24 h-[1px] mx-auto bg-white/30 mb-5"></div>
-                <p class="text-white/70 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
-                    오늘 있었던 일과 감정을 자유롭게 적어보세요. AI가 일기를 정리하고, 선택한 페르소나에 맞는 말투로 반응해줄 수 있어요.
+                </h2>
+                <div class="w-16 h-[1px] bg-white/25 mb-4"></div>
+                <p class="text-white/70 text-sm md:text-base max-w-2xl leading-relaxed">
+                    오늘 있었던 일과 감정을 자유롭게 적어보세요.<br>AI가 일기를 정리하고, 선택한 페르소나에 맞는 말투로 반응해줄 수 있어요.
                 </p>
             </div>
 
@@ -194,9 +186,11 @@
         </div>
     </main>
 
+    <script src="js/nav.js"></script>
     <script src="js/api.js"></script>
     <script src="js/frontend.js"></script>
     <script src="js/diary.js"></script>
+    <script src="js/search.js"></script>
     <script src="js/stt.js"></script>
 </body>
 </html>

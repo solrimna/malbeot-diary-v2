@@ -27,6 +27,11 @@
 
 ## 변경 이력
 
+- 2026-04-12 GET/PATCH/DELETE /users/me API 추가 — 닉네임·비밀번호 수정, 회원 탈퇴
+- 2026-04-12 my_profile.html 신규 생성 — 프로필 수정·로그아웃·회원 탈퇴 통합
+- 2026-04-12 nav를 `<app-nav>` Web Component로 리팩토링 — 전 페이지 공통 적용
+- 2026-04-12 nav 프로필 드롭다운 추가 — 닉네임 표시, 프로필·나의 현황·설정·로그아웃
+- 2026-04-12 search.js 분리 — AI 기억 검색 모달을 frontend.js에서 독립 모듈로 추출
 - 2026-04-11 settings.html 신규 생성 — AI 페르소나·알람 좌측 메뉴로 통합
 - 2026-04-11 profile.html 나의 현황으로 명칭 변경, 달력만 표시
 - 2026-04-11 전 페이지 nav 3항목 통일
@@ -57,8 +62,9 @@
   ┌─────────────────────────────────────────────────────────────┐
   │                        Client (Browser)                      │
   │  index  login  diary_write  diary_read  my-diary  profile   │
-  │  settings  persona-onboarding                              │
-  │  js/ (api.js · auth.js · diary.js · alarm.js · stt.js)     │
+  │  my_profile  settings  persona-onboarding                  │
+  │  js/ (nav.js · api.js · auth.js · diary.js · search.js)    │
+  │      (alarm.js · stt.js · frontend.js · my_profile.js)     │
   │  stt.js: Azure STT ← WebSocket / Web Speech API ← 브라우저 │
   │  sw.js (Service Worker / Web Push)                          │
   └────────────────────────┬────────────────────────────────────┘
@@ -77,6 +83,7 @@
   │  ├── lifespan: DB 초기화 + 알람 스케줄러 시작/종료           │
   │  ├── /api/v1 ── router.py                                   │
   │  │   ├── /auth      → auth.py      → auth_service.py       │
+  │  │   ├── /users     → user.py      → user_service.py       │
   │  │   ├── /diaries   → diary.py     → diary_service.py      │
   │  │   ├── /personas  → persona.py   → gpt_service.py        │
   │  │   ├── /feedback  → feedback.py  → feedback_service.py   │

@@ -204,17 +204,6 @@ function closeDiaryModal() {
     modal.classList.add("hidden");
 }
 
-function openSearchModal() {
-    const modal = document.getElementById("search-modal");
-    if (!modal) return;
-    modal.classList.remove("hidden");
-}
-
-function closeSearchModal() {
-    const modal = document.getElementById("search-modal");
-    if (!modal) return;
-    modal.classList.add("hidden");
-}
 
 // 미사용 코드 주석
 // function saveDiaryEntry() {
@@ -373,63 +362,6 @@ function renderDiaryProgress() {
     });
 }
 
-async function DiarySearch() {
-    const input = document.getElementById("diary-search-input");
-    const result = document.getElementById("diary-search-result");
-    const searchButton = document.getElementById("diary-search-button");
-
-    if (!input || !result) return;
-
-    const keyword = input.value.trim();
-
-
-    if (!keyword) {
-        showAppToast("검색하고 싶은 내용을 입력해주세요.", "info", "입력 확인");
-        return;
-    }
-
-     // 검색 중 표시
-    if (searchButton) {
-        searchButton.disabled = true;
-        searchButton.textContent = "검색 중...";
-    }
-    result.innerHTML = "검색 중이에요...";
-
-    try {
-        const response = await apiRequest("/search/", {
-            method: "POST",
-            body: getJsonBody({ query: keyword }),
-        });
-
-        // AI 답변 표시
-        let html = `<p class="mb-3">${escapeHtml(response.answer).replace(/\n/g, '<br>')}</p>`;
-
-        // 관련 일기 목록 표시
-        if (response.results && response.results.length > 0) {
-            html += `<div class="space-y-2 mt-3">`;
-            response.results.forEach((diary) => {
-                html += `
-                    <div class="search-result-item cursor-pointer hover:opacity-80"
-                         onclick="window.location.href='diary_read.html?id=${encodeURIComponent(diary.id)}'">
-                        <div class="text-sm text-white/50">${escapeHtml(diary.diary_date)}</div>
-                        <div class="text-sm text-white/80 mt-1">${escapeHtml(diary.content.slice(0, 80))}${diary.content.length > 80 ? "..." : ""}</div>
-                    </div>
-                `;
-            });
-            html += `</div>`;
-        }
-
-        result.innerHTML = html;
-
-    } catch (error) {
-        result.innerHTML = `검색 중 오류가 발생했어요. 다시 시도해주세요.`;
-    } finally {
-        if (searchButton) {
-            searchButton.disabled = false;
-            searchButton.textContent = "검색하기";
-        }
-    }
-}
 
 /* =========================
    profile.html

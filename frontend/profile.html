@@ -43,14 +43,6 @@
             z-index: 10;
         }
 
-        /* 네비게이션 배경 */
-        .profile-nav {
-            background: rgba(5, 8, 20, 0.05) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-        }
-
         /* 헤더 텍스트 흰색 */
         .profile-hero-title {
             color: #ffffff;
@@ -73,28 +65,19 @@
 
     <!-- Unicorn Studio 배경 -->
     <div id="us-background" data-us-project="ZnNikMOUWaAR1UzFsvqp"></div>
+    <app-nav></app-nav>
 
-    <div class="profile-layer absolute top-0 left-0 w-full h-16 z-30 peer"></div>
-
-    <!-- 드롭다운 네비게이션 -->
-    <nav class="profile-nav profile-layer absolute top-0 left-0 w-full text-white/80 shadow-2xl z-40 transform -translate-y-full transition-transform duration-500 ease-in-out peer-hover:translate-y-0 hover:translate-y-0">
-        <div class="w-full max-w-7xl mx-auto flex justify-between items-center px-8 md:px-16 py-6 font-kr">
-            <a href="diary_write.html" class="text-sm md:text-lg font-light tracking-widest hover:text-white transition-colors duration-300">일기 작성하기</a>
-            <a href="my-diary.html"   class="text-sm md:text-lg font-light tracking-widest hover:text-white transition-colors duration-300">나의 일기장</a>
-            <a href="settings.html"   class="text-sm md:text-lg font-light tracking-widest hover:text-white transition-colors duration-300">설정</a>
-        </div>
-    </nav>
 
     <main class="profile-layer min-h-screen px-6 py-16 md:px-10 lg:px-16">
         <div class="profile-shell">
 
             <!-- 헤더 -->
-            <section class="profile-hero">
-                <p class="font-script text-2xl md:text-3xl text-white/70 mb-3">My status</p>
-                <h1 class="profile-hero-title text-3xl md:text-5xl tracking-tight font-semibold mb-4">나의 현황</h1>
-                <div class="profile-hero-line"></div>
-                <p class="profile-hero-copy">일기를 쓴 날을 달력으로 확인할 수 있어요.</p>
-            </section>
+            <div class="text-left mb-10">
+                <p class="font-script text-lg md:text-xl text-white/60 mb-2">My status</p>
+                <h2 class="text-xl md:text-2xl tracking-tight text-white font-semibold mb-3">나의 현황</h2>
+                <div class="w-16 h-[1px] bg-white/25 mb-4"></div>
+                <p class="text-white/70 text-sm md:text-base max-w-2xl leading-relaxed">일기를 쓴 날을 달력으로 확인할 수 있어요.</p>
+            </div>
 
             <!-- 사이드바 + 메인 콘텐츠 래퍼 -->
             <div class="profile-body-layout">
@@ -117,11 +100,6 @@
                         <p class="profile-sid-stats-label">이번달 출석 일수</p>
                         <p class="profile-sid-stats-message" id="profile-attendance-message">집계 중…</p>
                     </div>
-
-                    <!-- 로그아웃 버튼 -->
-                    <button id="profile-logout-button" type="button" class="profile-sid-logout">
-                        로그아웃
-                    </button>
 
                 </aside>
 
@@ -158,8 +136,11 @@
         </div>
     </main>
 
+    <script src="js/nav.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/stt.js"></script>
     <script src="js/frontend.js"></script>
 </body>
 </html>
