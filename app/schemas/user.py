@@ -28,6 +28,26 @@ class UserResponse(BaseModel):
         from_attributes = True
 
 
+# ── 프로필 응답 데이터 (profile_image_url 포함) ───
+class UserProfileResponse(BaseModel):
+    id: uuid.UUID
+    username: str
+    nickname: str
+    profile_image_url: str | None
+    created_at: datetime
+    last_login_at: datetime | None
+
+    class Config:
+        from_attributes = True
+
+
+# ── 프로필 수정 요청 데이터 (모두 선택) ──────────
+class UserUpdate(BaseModel):
+    nickname: str | None = Field(default=None, min_length=1, max_length=50)
+    password: str | None = Field(default=None, min_length=8)
+    profile_image_url: str | None = Field(default=None, max_length=500)
+
+
 # ── 토큰 응답 데이터 ─────────────────────────────
 class TokenResponse(BaseModel):
     access_token: str
