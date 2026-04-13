@@ -18,7 +18,7 @@
 | 해시태그 자동 생성 | GPT가 일기 내용에서 감정·사건·장소 등 해시태그 추출 |
 | AI 일기 검색 | 해시태그 필터 + GPT 자연어 검색으로 과거 일기 탐색 |
 | 캘린더 뷰 | 월별 달력으로 일기 기록 조회 |
-| 알람 & 리마인더 | 요일 반복 알람 설정, APScheduler로 30초 간격 체크 |
+| 알람 & 리마인더 | 요일 반복 알람 설정, APScheduler cron으로 정시 발송 |
 | 웹 푸시 알림 | Service Worker 기반 PWA 푸시 알림 |
 
 자세한 기능 명세는 [docs/features.md](docs/features.md)를 참고해주세요.
@@ -27,6 +27,11 @@
 
 ## 변경 이력
 
+- 2026-04-13 보호 페이지 렌더링 전 인증 체크 — 토큰 검증 후 DOM 렌더링으로 깜빡임 제거 (`auth-guard.js`)
+- 2026-04-13 소셜 로그인 대비 users 테이블 확장 — email, auth_provider, social_id 컬럼 추가 (마이그레이션 `005`)
+- 2026-04-13 CI/CD 마이그레이션 순서 변경 — 앱 기동 전 `alembic upgrade head` 실행
+- 2026-04-13 로그인·회원가입 대소문자 통일 — `field_validator`로 입력 즉시 소문자화, 대소문자 중복 가입 방지
+- 2026-04-13 알람 스케줄러 cron으로 변경 — 정시 발송 보장 (30초 폴링 → cron 트리거)
 - 2026-04-12 Unicorn Studio → tsParticles 교체 — 외부 의존 제거, 별 파티클 배경 자체 구현
 - 2026-04-12 사용자 닉네임 조회 localStorage → /users/me API로 통일 (profile.html, index.html)
 - 2026-04-12 GET/PATCH/DELETE /users/me API 추가 — 닉네임·비밀번호 수정, 회원 탈퇴
@@ -65,8 +70,9 @@
   │                        Client (Browser)                      │
   │  index  login  diary_write  diary_read  my-diary  profile   │
   │  my_profile  settings  persona-onboarding                  │
-  │  js/ (nav.js · api.js · auth.js · diary.js · search.js)    │
-  │      (alarm.js · stt.js · frontend.js · my_profile.js)     │
+  │  js/ (nav.js · api.js · auth.js · auth-guard.js)           │
+  │      (diary.js · search.js · alarm.js · stt.js)            │
+  │      (frontend.js · my_profile.js · particles.js)          │
   │  stt.js: Azure STT ← WebSocket / Web Speech API ← 브라우저 │
   │  sw.js (Service Worker / Web Push)                          │
   └────────────────────────┬────────────────────────────────────┘
