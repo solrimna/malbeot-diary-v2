@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field, field_validator
 # ── 회원가입 요청 데이터 ──────────────────────────
 class UserCreate(BaseModel):
     username: str = Field(min_length=3, max_length=50)
+    email: str | None = Field(default=None, max_length=255)
     password: str = Field(min_length=8)
     nickname: str = Field(min_length=1, max_length=50)
 
@@ -42,8 +43,10 @@ class UserResponse(BaseModel):
 class UserProfileResponse(BaseModel):
     id: uuid.UUID
     username: str
+    email: str | None
     nickname: str
     profile_image_url: str | None
+    auth_provider: str
     created_at: datetime
     last_login_at: datetime | None
 
