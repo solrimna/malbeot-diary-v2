@@ -1,5 +1,11 @@
 name: CI/CD
 
+# 외부 액션 버전 고정 정책
+# - @vN 같은 플로팅 태그는 메이저 버전 내 최신 릴리즈로 자동 갱신된다.
+#   해당 릴리즈에 버그·CDN 장애가 있으면 코드 변경 없이 CI가 갑자기 깨진다.
+# - 모든 외부 액션은 패치 버전까지 고정(예: @v0.1.7)한다.
+#   업그레이드가 필요할 때는 의도적으로 버전을 올린다.
+
 on:
   push:
     branches: [main]
@@ -11,9 +17,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.0.1         # 플로팅 @v5 대신 고정
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v6.2.0     # 플로팅 @v6 대신 고정
         with:
           python-version: "3.13"
 
@@ -47,9 +53,9 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.0.1         # 플로팅 @v5 대신 고정
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v6.2.0     # 플로팅 @v6 대신 고정
         with:
           python-version: "3.13"
 
@@ -71,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.0.1         # 플로팅 @v5 대신 고정
 
       - name: Log in to DockerHub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -82,7 +88,7 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/malbeot-diary:latest
 
       - name: Copy configs to EC2
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v0.1.7      # 고정 버전 유지
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
@@ -91,7 +97,7 @@ jobs:
           target: "~/app"
 
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v0.1.7      # @v1 플로팅에서 고정으로 변경 (v1.8.2 drone-ssh 다운로드 장애 대응)
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
