@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Petit+Formal+Script&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/auth-guard.js"></script>
 
     <style>
         body, html {
@@ -20,10 +21,10 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #000;
+            background-color: #050814;
         }
 
-        #us-background {
+        #tsparticles {
             position: fixed;
             top: 0;
             left: 0;
@@ -38,30 +39,14 @@
             z-index: 10;
         }
 
-        /* 네비게이션 배경 (index.html 참고) */
-        .persona-nav {
-            background: rgba(5, 8, 20, 0.05) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(180, 200, 255, 0.08) !important;
-        }
     </style>
 </head>
 <body class="page-persona min-h-screen relative font-kr">
 
-    <div id="us-background" data-us-project="ZnNikMOUWaAR1UzFsvqp"></div>
+    <div id="tsparticles"></div>
+    <app-nav></app-nav>
 
-    <div class="persona-layer absolute top-0 left-0 w-full h-16 z-30 peer"></div>
-
-    <nav class="persona-nav persona-layer absolute top-0 left-0 w-full text-[#c8d8f8] shadow-2xl z-40 transform -translate-y-full transition-transform duration-500 ease-in-out peer-hover:translate-y-0 hover:translate-y-0">
-        <div class="w-full max-w-7xl mx-auto flex justify-between items-center px-8 md:px-16 py-6 font-kr">
-            <a href="index.html"   class="text-sm md:text-lg font-light tracking-widest hover:text-white transition-colors duration-300">메인으로</a>
-            <a href="profile.html" class="text-sm md:text-lg font-light tracking-widest hover:text-white transition-colors duration-300">내 프로필</a>
-            <a href="my-diary.html" class="text-sm md:text-lg font-light tracking-widest hover:text-white transition-colors duration-300">나의 일기장</a>
-        </div>
-    </nav>
-
-    <main class="persona-layer min-h-screen px-6 py-24 md:px-10 lg:px-16">
+    <main class="persona-layer min-h-screen px-6 pt-16 pb-24 md:px-10 lg:px-16">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-14">
                 <p class="font-script text-2xl md:text-3xl text-white/70 mb-4">AI Persona</p>
@@ -176,8 +161,8 @@
         </div>
     </main>
 
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/frontend.js"></script>
+    <script>
+        window.location.replace("settings.html");
+    </script>
 </body>
 </html>

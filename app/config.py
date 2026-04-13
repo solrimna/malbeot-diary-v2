@@ -28,13 +28,10 @@ class Settings(BaseSettings):
     VAPID_PRIVATE_KEY: str = ""
     VAPID_CLAIMS_SUB: str = "mailto:test@example.com"
 
-    # Alarm
-    ALARM_CHECK_INTERVAL_SECONDS: int = 30
-
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
-
+        extra = "ignore"
 
 @lru_cache
 def get_settings() -> Settings:

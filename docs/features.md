@@ -21,15 +21,27 @@ AI 기반 감성 일기 서비스. 음성 입력, AI 피드백, 맞춤형 말벗
 
 ## 1. 인증 / 사용자 관리
 
+**인증**
+
 | 항목 | 내용 |
 |------|------|
 | 회원가입 | `POST /api/v1/auth/register` |
 | 로그인 | `POST /api/v1/auth/login` — JWT 액세스 토큰 발급 |
 | 로그아웃 | `POST /api/v1/auth/logout` |
 
+**내 계정 관리**
+
+| 메서드 | 엔드포인트 | 설명 |
+|--------|-----------|------|
+| `GET` | `/api/v1/users/me` | 내 프로필 조회 |
+| `PATCH` | `/api/v1/users/me` | 닉네임 · 비밀번호 수정 |
+| `DELETE` | `/api/v1/users/me` | 회원 탈퇴 (관련 데이터 CASCADE 삭제) |
+
 - JWT 기반 무상태 인증 (기본 만료 60분)
 - bcrypt 비밀번호 해싱
+- 아이디(username) 대소문자 구분 없이 처리 — 가입·로그인 시 `field_validator`로 즉시 소문자 변환, 대소문자 중복 가입 방지
 - 사용자 프로필: 닉네임, 프로필 이미지 URL
+- DB 확장 (소셜 로그인 대비): `email`, `auth_provider`, `social_id` 컬럼 추가 (마이그레이션 `005`)
 
 ---
 
@@ -143,7 +155,7 @@ AI 기반 감성 일기 서비스. 음성 입력, AI 피드백, 맞춤형 말벗
 - HH:MM 형식 시간 설정, 요일 반복 지정 (MON ~ SUN)
 - 활성/비활성 토글
 - 동일 시간 + 겹치는 요일 중복 생성 방지
-- APScheduler로 30초 간격 체크
+- APScheduler cron 트리거로 정시 발송 (기존 30초 폴링 방식에서 변경)
 
 ---
 
@@ -168,10 +180,18 @@ AI 기반 감성 일기 서비스. 음성 입력, AI 피드백, 맞춤형 말벗
 | 로그인 | `login.html` | 인증 폼 |
 | 일기 작성 | `diary_write.html` | 음성 입력, 감정/날씨 선택, 실시간 STT |
 | 일기 읽기 | `diary_read.html` | 일기 + AI 피드백 + TTS 재생 |
-| 내 일기 | `my-diary.html` | 달력/목록 뷰, 해시태그 필터 |
-| 말벗 관리 | `ai-persona.html` | 페르소나 선택 · 설정 UI |
+| 내 일기 | `my-diary.html` | 책장 뷰, 해시태그 필터, AI 기억 검색 |
+| 나의 현황 | `profile.html` | 월별 달력으로 일기 기록 확인 |
+| 내 프로필 | `my_profile.html` | 닉네임·비밀번호 수정, 로그아웃, 회원 탈퇴 |
+| 설정 | `settings.html` | AI 페르소나 관리 + 알람 설정 (좌측 메뉴 탭) |
 | 온보딩 | `persona-onboarding.html` | 맞춤 페르소나 생성 Q&A |
-| 프로필 | `profile.html` | 계정 설정 |
+
+**공통 컴포넌트**
+
+- `js/nav.js` — `<app-nav>` Web Component: 일기 작성하기 / 나의 일기장 / AI로 기억 찾기 / 프로필 아이콘(드롭다운: 닉네임 표시, 프로필·나의 현황·설정·로그아웃)
+- `js/auth-guard.js` — 보호 페이지 진입 시 렌더링 전 JWT 토큰 검증 → 미인증 시 로그인 페이지 리다이렉트 (깜빡임 제거)
+- `js/search.js` — AI 기억 검색 모달 (IIFE 방식, 모든 보호 페이지에서 공유)
+- `js/particles.js` — tsParticles 별 파티클 배경 (전 페이지 공통 적용, Unicorn Studio 대체)
 
 ---
 
@@ -186,6 +206,6 @@ AI 기반 감성 일기 서비스. 음성 입력, AI 피드백, 맞춤형 말벗
 | 캐시 | Redis 7 (선택) |
 | 스케줄러 | APScheduler 3.10.4 |
 | 웹 푸시 | pywebpush 2.3.0 |
-| 프론트엔드 | Vanilla JS (ES6+), Tailwind CSS, Unicorn Studio |
+| 프론트엔드 | Vanilla JS (ES6+), Tailwind CSS, tsParticles |
 | DevOps | Docker, Docker Compose, Nginx, Let's Encrypt |
 | 인프라 | Terraform, AWS (EC2, RDS), DuckDNS |

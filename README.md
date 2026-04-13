@@ -1,6 +1,7 @@
 # 하루.commit() - 말벗 AI 일기장
 
 > 음성 입력과 AI 공감 피드백이 결합된 감성 일기 서비스
+> 팀 프로젝트(v1) 종료 후 개인 개선 작업 중인 버전입니다. — [원본 저장소](https://github.com/solrimna/malbeot-diary)
 
 **라이브 데모:** https://malbeot.duckdns.org/
 
@@ -17,10 +18,31 @@
 | 해시태그 자동 생성 | GPT가 일기 내용에서 감정·사건·장소 등 해시태그 추출 |
 | AI 일기 검색 | 해시태그 필터 + GPT 자연어 검색으로 과거 일기 탐색 |
 | 캘린더 뷰 | 월별 달력으로 일기 기록 조회 |
-| 알람 & 리마인더 | 요일 반복 알람 설정, APScheduler로 30초 간격 체크 |
+| 알람 & 리마인더 | 요일 반복 알람 설정, APScheduler cron으로 정시 발송 |
 | 웹 푸시 알림 | Service Worker 기반 PWA 푸시 알림 |
 
 자세한 기능 명세는 [docs/features.md](docs/features.md)를 참고해주세요.
+
+---
+
+## 변경 이력
+
+- 2026-04-13 보호 페이지 렌더링 전 인증 체크 — 토큰 검증 후 DOM 렌더링으로 깜빡임 제거 (`auth-guard.js`)
+- 2026-04-13 소셜 로그인 대비 users 테이블 확장 — email, auth_provider, social_id 컬럼 추가 (마이그레이션 `005`)
+- 2026-04-13 CI/CD 마이그레이션 순서 변경 — 앱 기동 전 `alembic upgrade head` 실행
+- 2026-04-13 로그인·회원가입 대소문자 통일 — `field_validator`로 입력 즉시 소문자화, 대소문자 중복 가입 방지
+- 2026-04-13 알람 스케줄러 cron으로 변경 — 정시 발송 보장 (30초 폴링 → cron 트리거)
+- 2026-04-12 Unicorn Studio → tsParticles 교체 — 외부 의존 제거, 별 파티클 배경 자체 구현
+- 2026-04-12 사용자 닉네임 조회 localStorage → /users/me API로 통일 (profile.html, index.html)
+- 2026-04-12 GET/PATCH/DELETE /users/me API 추가 — 닉네임·비밀번호 수정, 회원 탈퇴
+- 2026-04-12 my_profile.html 신규 생성 — 프로필 수정·로그아웃·회원 탈퇴 통합
+- 2026-04-12 nav를 `<app-nav>` Web Component로 리팩토링 — 전 페이지 공통 적용
+- 2026-04-12 nav 프로필 드롭다운 추가 — 닉네임 표시, 프로필·나의 현황·설정·로그아웃
+- 2026-04-12 search.js 분리 — AI 기억 검색 모달을 frontend.js에서 독립 모듈로 추출
+- 2026-04-11 settings.html 신규 생성 — AI 페르소나·알람 좌측 메뉴로 통합
+- 2026-04-11 profile.html 나의 현황으로 명칭 변경, 달력만 표시
+- 2026-04-11 전 페이지 nav 3항목 통일
+- 2026-04-11 config.py extra=ignore 추가 — Docker secrets 환경변수 충돌 방지
 
 ---
 
@@ -35,7 +57,7 @@
 | Cache | Redis 7 |
 | Scheduler | APScheduler 3.10.4 |
 | Web Push | pywebpush 2.3.0 |
-| Frontend | Vanilla JS (ES6+), Tailwind CSS, Unicorn Studio |
+| Frontend | Vanilla JS (ES6+), Tailwind CSS, tsParticles |
 | DevOps | Docker, Docker Compose, Nginx, Let's Encrypt |
 | Infra | Terraform, AWS (EC2, RDS), DuckDNS |
 
@@ -47,8 +69,10 @@
   ┌─────────────────────────────────────────────────────────────┐
   │                        Client (Browser)                      │
   │  index  login  diary_write  diary_read  my-diary  profile   │
-  │  ai-persona  persona-onboarding                             │
-  │  js/ (api.js · auth.js · diary.js · alarm.js · stt.js)     │
+  │  my_profile  settings  persona-onboarding                  │
+  │  js/ (nav.js · api.js · auth.js · auth-guard.js)           │
+  │      (diary.js · search.js · alarm.js · stt.js)            │
+  │      (frontend.js · my_profile.js · particles.js)          │
   │  stt.js: Azure STT ← WebSocket / Web Speech API ← 브라우저 │
   │  sw.js (Service Worker / Web Push)                          │
   └────────────────────────┬────────────────────────────────────┘
@@ -67,6 +91,7 @@
   │  ├── lifespan: DB 초기화 + 알람 스케줄러 시작/종료           │
   │  ├── /api/v1 ── router.py                                   │
   │  │   ├── /auth      → auth.py      → auth_service.py       │
+  │  │   ├── /users     → user.py      → user_service.py       │
   │  │   ├── /diaries   → diary.py     → diary_service.py      │
   │  │   ├── /personas  → persona.py   → gpt_service.py        │
   │  │   ├── /feedback  → feedback.py  → feedback_service.py   │
@@ -192,3 +217,5 @@ python -c "from pywebpush import Vapid; v = Vapid(); v.generate_keys(); print('P
 |------|------|
 | [docs/features.md](docs/features.md) | 전체 기능 명세 및 API 엔드포인트 |
 | [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) | Git 작업 가이드 및 브랜치 전략 |
+
+---

@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 
 from fastapi import HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import create_access_token, hash_password, verify_password
@@ -17,8 +17,8 @@ class AuthService:
         db: AsyncSession,
         data: UserCreate,
     ) -> User:
-        # 아이디 중복 확인
-        result = await db.execute(select(User).where(User.username == data.username))
+        # 아이디 중복 확인 (대소문자 구분 없이)
+        result = await db.execute(select(User).where(func.lower(User.username) == data.username))
         if result.scalar_one_or_none():
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
@@ -35,8 +35,10 @@ class AuthService:
 
         user = User(
             username=data.username,
+            email=data.email,
             password_hash=pw_hash,
             nickname=data.nickname,
+            auth_provider="local",
         )
         db.add(user)
         await db.commit()
@@ -50,10 +52,10 @@ class AuthService:
         username: str,
         password: str,
     ) -> tuple[User, str]:
-        result = await db.execute(select(User).where(User.username == username))
+        result = await db.execute(select(User).where(func.lower(User.username) == username.lower()))
         user = result.scalar_one_or_none()
 
-        if not user or not verify_password(password, user.password_hash):
+        if not user or not user.password_hash or not verify_password(password, user.password_hash):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="아이디 또는 비밀번호가 올바르지 않습니다.",

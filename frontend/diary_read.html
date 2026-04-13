@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Petit+Formal+Script&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/auth-guard.js"></script>
 
     <style>
         body, html {
@@ -20,10 +21,10 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #000;
+            background-color: #050814;
         }
 
-        #us-background {
+        #tsparticles {
             position: fixed;
             top: 0;
             left: 0;
@@ -41,24 +42,19 @@
 </head>
 <body class="page-diary-detail min-h-screen relative font-kr">
 
-    <div id="us-background" data-us-project="ZnNikMOUWaAR1UzFsvqp"></div>
+    <div id="tsparticles"></div>
+    <app-nav></app-nav>
 
-    <a href="my-diary.html" class="diary-layer absolute top-8 left-8 text-white/70 flex items-center gap-2 hover:text-white transition-opacity z-50">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        <span class="tracking-widest text-sm uppercase">Back to Diary</span>
-    </a>
 
-    <main class="diary-layer min-h-screen px-6 py-24 md:px-10 lg:px-16">
+    <main class="diary-layer min-h-screen px-6 pt-16 pb-24 md:px-10 lg:px-16">
         <div class="diary-detail-shell">
-            <div class="text-center mb-12">
-                <p class="font-script text-2xl md:text-3xl text-white/70 mb-3">Read your day</p>
-                <h1 class="text-3xl md:text-5xl tracking-tight text-white font-semibold mb-4">
+            <div class="text-left mb-10">
+                <p class="font-script text-lg md:text-xl text-white/60 mb-2">Read your day</p>
+                <h2 class="text-xl md:text-2xl tracking-tight text-white font-semibold mb-3">
                     저장된 일기 보기
-                </h1>
-                <div class="w-24 h-[1px] mx-auto bg-white/30 mb-5"></div>
-                <p class="text-white/70 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+                </h2>
+                <div class="w-16 h-[1px] bg-white/25 mb-4"></div>
+                <p class="text-white/70 text-sm md:text-base max-w-2xl leading-relaxed">
                     내가 저장한 일기 내용과 AI 리뷰를 한 화면에서 확인할 수 있어요.
                 </p>
             </div>
@@ -172,9 +168,13 @@
             </div>
         </div>
     </main>
+    <script src="js/nav.js"></script>
     <script src="js/api.js"></script>
     <script src="js/frontend.js"></script>
     <script src="js/diary.js"></script>
+    <script src="js/search.js"></script>
     <script src="js/stt.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+    <script src="js/particles.js"></script>
 </body>
 </html>

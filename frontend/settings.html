@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>설정 - "하루" commit()</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Petit+Formal+Script&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/auth-guard.js"></script>
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #050814;
+        }
+
+        #tsparticles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+        }
+
+        .settings-layer {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 왼쪽 메뉴 */
+        .settings-menu {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 34px;
+            overflow: hidden;
+        }
+
+        .settings-menu-item {
+            width: 100%;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: left;
+            color: rgba(200, 216, 248, 0.7);
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            transition: background 0.15s, color 0.15s;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .settings-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-menu-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+        }
+
+        .settings-menu-item.is-active {
+            background: rgba(255, 255, 255, 0.10);
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        /* 메뉴 ↔ 콘텐츠 구분선 */
+        .settings-divider {
+            width: 1px;
+            align-self: stretch;
+            background: rgba(255, 255, 255, 0.10);
+            flex-shrink: 0;
+        }
+
+        /* 오른쪽 콘텐츠 */
+        .settings-panel {
+            display: none;
+        }
+
+        .settings-panel.is-active {
+            display: block;
+        }
+
+        .profile-calendar-select option {
+            background-color: #1a0e14;
+            color: #ffffff;
+        }
+
+        .alarm-time-selects {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body class="page-persona min-h-screen relative font-kr">
+
+    <div id="tsparticles"></div>
+    <app-nav></app-nav>
+
+
+    <main class="settings-layer min-h-screen px-6 pt-16 pb-24 md:px-10 lg:px-16">
+        <div class="max-w-7xl mx-auto">
+
+            <div class="text-left mb-10">
+                <p class="font-script text-lg md:text-xl text-white/60 mb-2">Settings</p>
+                <h2 class="text-xl md:text-2xl tracking-tight text-white font-semibold mb-3">설정</h2>
+                <div class="w-16 h-[1px] bg-white/25 mb-4"></div>
+            </div>
+
+            <div class="flex gap-8 items-start">
+
+                <!-- 왼쪽 메뉴 -->
+                <div class="settings-menu w-48 md:w-56 flex-shrink-0">
+                    <button type="button" class="settings-menu-item is-active" data-target="persona">
+                        <span>AI 페르소나</span>
+                        <span class="opacity-40">›</span>
+                    </button>
+                    <button type="button" class="settings-menu-item" data-target="alarm">
+                        <span>알람</span>
+                        <span class="opacity-40">›</span>
+                    </button>
+                </div>
+
+                <!-- 구분선 -->
+                <div class="settings-divider"></div>
+
+                <!-- 오른쪽 콘텐츠 -->
+                <div class="flex-1 min-w-0">
+
+                    <!-- AI 페르소나 패널 -->
+                    <div id="settings-panel-persona" class="settings-panel is-active">
+                        <div class="grid grid-cols-1 xl:grid-cols-[1.1fr_0.9fr] gap-8">
+                            <section class="persona-glass rounded-[32px] p-7 md:p-10 shadow-2xl">
+                                <div class="flex items-center justify-between mb-8">
+                                    <div>
+                                        <p id="persona-form-subtitle" class="font-script text-xl text-white/70 mb-1">Create persona</p>
+                                        <h2 id="persona-form-title" class="text-2xl md:text-3xl font-semibold text-white">새 페르소나 만들기</h2>
+                                    </div>
+                                    <div class="hidden md:flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-white opacity-90"></span>
+                                        <span class="w-3 h-3 rounded-full bg-white opacity-60"></span>
+                                        <span class="w-3 h-3 rounded-full bg-white opacity-30"></span>
+                                    </div>
+                                </div>
+                                <form id="persona-form" class="space-y-6">
+                                    <input type="hidden" id="persona-edit-id" value="">
+                                    <div>
+                                        <label class="persona-label">페르소나 이름</label>
+                                        <input id="persona-name" type="text" class="persona-input" placeholder="예: 다정한 담임선생님">
+                                    </div>
+                                    <div>
+                                        <label class="persona-label">말투 / 분위기</label>
+                                        <input id="persona-tone" type="text" class="persona-input" placeholder="예: 차분하고 따뜻한 말투, 부드럽게 칭찬해주기">
+                                    </div>
+                                    <div>
+                                        <label class="persona-label">AI 반응 스타일</label>
+                                        <textarea id="persona-style" class="persona-textarea" placeholder="예: 일기 내용을 짧게 정리한 뒤, 오늘의 감정을 공감하고 마지막에 따뜻한 한마디를 남겨줘."></textarea>
+                                    </div>
+                                    <div class="pt-2 flex flex-wrap gap-3">
+                                        <button id="persona-save-btn" type="button" onclick="addPersona()"
+                                            class="px-8 py-4 rounded-full text-white tracking-[0.18em] uppercase text-sm font-medium transition-all hover:opacity-90 hover:-translate-y-[1px] bg-white/20 border border-white/30">
+                                            Save Persona
+                                        </button>
+                                        <button id="persona-cancel-btn" type="button" onclick="cancelPersonaEdit()" style="display:none"
+                                            class="px-8 py-4 rounded-full text-white/60 tracking-[0.18em] uppercase text-sm font-medium transition-all hover:text-white hover:-translate-y-[1px] border border-white/20">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                                <div class="flex items-center gap-3 my-6">
+                                    <div class="flex-1 h-[1px] bg-white/15"></div>
+                                    <span class="text-white/30 text-xs tracking-widest">또는</span>
+                                    <div class="flex-1 h-[1px] bg-white/15"></div>
+                                </div>
+                                <a href="persona-onboarding.html"
+                                   class="flex items-center justify-between px-6 py-4 rounded-2xl border border-white/15 bg-white/05 hover:bg-white/10 hover:border-white/30 transition-all group">
+                                    <div>
+                                        <p class="text-white/80 text-sm font-medium group-hover:text-white transition-colors">✨ 질문에 답하고 나만의 말벗 만들기</p>
+                                        <p class="text-white/35 text-xs mt-0.5">목소리·아바타까지 직접 고를 수 있어요</p>
+                                    </div>
+                                    <span class="text-white/30 group-hover:text-white/70 transition-colors text-lg">→</span>
+                                </a>
+                            </section>
+
+                            <section class="persona-panel rounded-[32px] p-7 md:p-10 shadow-2xl">
+                                <div class="mb-8">
+                                    <p class="font-script text-xl text-white/70 mb-1">My personas</p>
+                                    <h2 class="text-2xl md:text-3xl font-semibold text-white">페르소나 목록</h2>
+                                    <p class="text-white/70 text-sm mt-3 leading-relaxed">
+                                        저장한 페르소나를 확인하고, 반응 컨셉을 한눈에 비교할 수 있어요.
+                                    </p>
+                                </div>
+                                <div id="persona-list" class="space-y-4">
+                                    <div class="persona-empty">
+                                        아직 만든 페르소나가 없어요.<br>
+                                        왼쪽에서 첫 번째 페르소나를 만들어보세요.
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    <!-- 알람 패널 -->
+                    <div id="settings-panel-alarm" class="settings-panel">
+                        <section class="profile-alarm-card">
+                            <div id="alarm-view-list">
+                                <div class="profile-alarm-header">
+                                    <div>
+                                        <p class="profile-calendar-caption">Alarm settings</p>
+                                        <h2 class="text-2xl font-semibold text-white">알람 설정</h2>
+                                    </div>
+                                    <button type="button" id="add-alarm-btn" class="profile-calendar-nav">+ 알람 추가</button>
+                                </div>
+                                <div id="alarm-list" class="flex flex-col gap-3 text-white/80 text-sm">
+                                    <p>등록된 알람이 없습니다.</p>
+                                </div>
+                            </div>
+                            <div id="alarm-view-form" class="hidden">
+                                <div class="flex items-center gap-4 mb-10">
+                                    <button type="button" id="back-to-list-btn" class="profile-calendar-nav">← 뒤로</button>
+                                    <h2 id="alarm-form-title" class="text-xl font-semibold text-white">알람 추가</h2>
+                                </div>
+                                <div class="flex flex-col items-center gap-3 mb-10">
+                                    <p class="profile-calendar-caption">알람 시간</p>
+                                    <div class="alarm-time-selects">
+                                        <select id="alarm-ampm" class="profile-calendar-select">
+                                            <option value="AM">오전</option>
+                                            <option value="PM">오후</option>
+                                        </select>
+                                        <select id="alarm-hour"   class="profile-calendar-select"></select>
+                                        <select id="alarm-minute" class="profile-calendar-select"></select>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-center gap-4 mb-10">
+                                    <p class="profile-calendar-caption">반복 요일</p>
+                                    <div class="weekday-group flex gap-2 flex-wrap justify-center">
+                                        <button type="button" id="day-all" class="profile-day-pill profile-day-pill-all">매일</button>
+                                        <button type="button" id="day-mon" data-day="MON" class="profile-day-pill">월</button>
+                                        <button type="button" id="day-tue" data-day="TUE" class="profile-day-pill">화</button>
+                                        <button type="button" id="day-wed" data-day="WED" class="profile-day-pill">수</button>
+                                        <button type="button" id="day-thu" data-day="THU" class="profile-day-pill">목</button>
+                                        <button type="button" id="day-fri" data-day="FRI" class="profile-day-pill">금</button>
+                                        <button type="button" id="day-sat" data-day="SAT" class="profile-day-pill">토</button>
+                                        <button type="button" id="day-sun" data-day="SUN" class="profile-day-pill">일</button>
+                                    </div>
+                                </div>
+                                <div class="flex justify-center gap-3">
+                                    <button type="button" id="save-alarm-btn"   class="profile-calendar-nav">저장</button>
+                                    <button type="button" id="cancel-alarm-btn" class="profile-calendar-nav">취소</button>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/nav.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/stt.js"></script>
+    <script src="js/frontend.js"></script>
+    <script src="js/alarm.js"></script>
+    <script>
+        function switchSettingsPanel(target) {
+            document.querySelectorAll(".settings-menu-item").forEach(el => el.classList.remove("is-active"));
+            document.querySelectorAll(".settings-panel").forEach(el => el.classList.remove("is-active"));
+            document.querySelector(`.settings-menu-item[data-target="${target}"]`)?.classList.add("is-active");
+            document.getElementById(`settings-panel-${target}`)?.classList.add("is-active");
+        }
+
+        document.querySelectorAll(".settings-menu-item").forEach(btn => {
+            btn.addEventListener("click", () => switchSettingsPanel(btn.dataset.target));
+        });
+
+        // URL 파라미터로 초기 패널 지정 (예: settings.html?open=alarm)
+        const open = new URLSearchParams(window.location.search).get("open");
+        if (open) switchSettingsPanel(open);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+    <script src="js/particles.js"></script>
+</body>
+</html>
