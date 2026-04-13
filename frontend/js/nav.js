@@ -35,7 +35,7 @@ class AppNav extends HTMLElement {
         this.innerHTML = `
             <div class="nav-inner">
                 <div class="nav-title-wrap">
-                    <span class="nav-title-script">Write Down Your Day</span>
+                    <a href="index.html" class="nav-title-script">Write Down Your Day</a>
                 </div>
                 <div class="nav-divider"></div>
                 <div class="nav-links">

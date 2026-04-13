@@ -29,12 +29,10 @@ app-nav {
     position: sticky;
     top: 0;
     z-index: 40;
-    background: rgba(5, 8, 20, 0.05);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(180, 200, 255, 0.08);
+    background: transparent;
+    border-bottom: none;
+    box-shadow: none;
     color: #c8d8f8;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
 }
 
 .nav-inner {
@@ -1273,7 +1271,7 @@ app-nav {
 .diary-progress-wrap {
     display: flex;
     justify-content: center;
-    margin-bottom: 34px;
+    margin-bottom: 16px;
 }
 
 .diary-progress {
@@ -1359,9 +1357,9 @@ app-nav {
 .diary-shelf-wrapper {
     width: 100%;
     overflow: hidden;
-    padding: 18px 0 18px;
+    padding: 8px 0 18px;
     position: relative;
-    min-height: 560px;
+    min-height: 500px;
 }
 
 .diary-floor-line {
@@ -1377,7 +1375,7 @@ app-nav {
     display: flex;
     align-items: flex-end;
     gap: 3px;
-    min-height: 540px;
+    min-height: 480px;
     transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
     will-change: transform;
     padding-bottom: 40px;

@@ -35,12 +35,29 @@
             z-index: 0;
         }
 
-        /* 네비게이션 배경 – 배경과 어울리는 반투명 다크 */
+        /* 네비게이션 배경 – 페이지 배경과 동일하게 투과 */
         .index-nav {
-            background: rgba(5, 8, 20, 0.05) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(180, 200, 255, 0.08) !important;
+            background: transparent !important;
+            border-bottom: none !important;
+        }
+
+        /* 메인 텍스트 */
+        .main-text {
+            position: absolute;
+            top: 42%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Petit Formal Script', cursive;
+            color: rgba(220, 232, 255, 0.88);
+            font-size: 4.4rem;
+            text-align: center;
+            line-height: 1.5;
+            text-shadow:
+                0 0 20px rgba(160, 200, 255, 0.55),
+                0 0 50px rgba(120, 170, 255, 0.25);
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 10;
         }
 
         /* 인삿말 텍스트 */
@@ -70,6 +87,8 @@
             </a>
         </div>
     </nav>
+
+    <p class="main-text">Write Down<br>Your Day</p>
 
     <!-- 로그인 후 인삿말 (기존 auth.js 연동) -->
     <p id="index-user-greeting"
