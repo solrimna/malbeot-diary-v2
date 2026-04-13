@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 # ── 회원가입 요청 데이터 ──────────────────────────
@@ -10,11 +10,21 @@ class UserCreate(BaseModel):
     password: str = Field(min_length=8)
     nickname: str = Field(min_length=1, max_length=50)
 
+    @field_validator("username")
+    @classmethod
+    def lowercase_username(cls, v: str) -> str:
+        return v.lower()
+
 
 # ── 로그인 요청 데이터 ───────────────────────────
 class UserLogin(BaseModel):
     username: str
     password: str
+
+    @field_validator("username")
+    @classmethod
+    def lowercase_username(cls, v: str) -> str:
+        return v.lower()
 
 
 # ── 유저 응답 데이터 (비밀번호 제외) ──────────────
