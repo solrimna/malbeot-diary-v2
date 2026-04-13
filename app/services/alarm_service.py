@@ -17,7 +17,7 @@ async def get_due_alarms(db: AsyncSession, user_id: uuid.UUID | None = None):
     현재 시각 기준으로 실행되어야 하는 알람 목록을 반환한다.
     user_id가 주어지면 해당 사용자의 알람만 조회한다.
     """
-    now = datetime.now(tz=ZoneInfo("Asia/Seoul"))
+    now = datetime.now(tz=ZoneInfo("Asia/Seoul")).replace(tzinfo=None)
     current_time = now.strftime("%H:%M")
 
     weekday_map = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
@@ -105,7 +105,7 @@ async def trigger_alarm(db: AsyncSession, alarm: Alarm):
     else:
         print(f"[NO SUBSCRIPTION] user_id={alarm.user_id}")
 
-    alarm.last_triggered_at = datetime.now(tz=ZoneInfo("Asia/Seoul"))
+    alarm.last_triggered_at = datetime.now(tz=ZoneInfo("Asia/Seoul")).replace(tzinfo=None)
 
     db.add(alarm)
     await db.commit()
