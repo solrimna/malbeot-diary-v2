@@ -2,7 +2,6 @@ import logging
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from app.config import get_settings
 from app.database import AsyncSessionLocal
 from app.services.alarm_service import process_due_alarms
 
@@ -26,24 +25,22 @@ async def check_alarms():
 def start_scheduler():
     """
     앱 시작 시 알람 스케줄러를 등록하고 실행한다.
-    알람 확인 주기는 config.py 설정값을 따른다.
+    매 분 0초에 실행되어 정시 알람을 정확하게 처리한다.
     """
     if scheduler.running:
         return
 
-    settings = get_settings()
-
     scheduler.add_job(
         check_alarms,
-        "interval",
-        seconds=settings.ALARM_CHECK_INTERVAL_SECONDS,
+        "cron",
+        second=0,          # 매 분 정각(0초)에 실행
         id="check_alarms",
         replace_existing=True,
-        max_instances=1,   # 이전 실행이 끝나지 않아도 중복 실행 방지
-        coalesce=True,     # 실행이 밀렸을 때 몰아서 실행하지 않고 1번만 실행
+        max_instances=1,   # 중복 실행 방지
+        coalesce=True,     # 밀린 실행은 1번만 처리
     )
     scheduler.start()
-    logger.info("[SCHEDULER] started")
+    logger.info("[SCHEDULER] started (cron: every minute at :00)")
 
 
 def stop_scheduler():
