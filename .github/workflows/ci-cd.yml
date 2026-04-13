@@ -100,6 +100,10 @@ jobs:
             cd ~/app
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/malbeot-diary:latest docker compose -f docker-compose.yml pull app
+            # DB · Redis 먼저 기동
+            DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/malbeot-diary:latest docker compose -f docker-compose.yml up -d db redis
+            # 마이그레이션 완료 후 컨테이너 자동 제거
+            DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/malbeot-diary:latest docker compose -f docker-compose.yml run --rm app alembic upgrade head
+            # 마이그레이션 완료 후 앱 기동
             DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/malbeot-diary:latest docker compose -f docker-compose.yml up -d
-            docker compose -f docker-compose.yml exec -T app alembic upgrade head
             docker image prune -f
