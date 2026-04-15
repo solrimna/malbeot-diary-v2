@@ -1,7 +1,8 @@
 # 하루.commit() - 말벗 AI 일기장
 
 > 음성 입력과 AI 공감 피드백이 결합된 감성 일기 서비스
-> 팀 프로젝트(v1) 종료 후 개인 개선 작업 중인 버전입니다. — [원본 저장소](https://github.com/solrimna/malbeot-diary)
+> 팀 프로젝트(v1) 종료 후 개인 개선 작업 중인 버전입니다.
+- [원본 저장소](https://github.com/solrimna/malbeot-diary)
 
 **라이브 데모:** https://malbeot.duckdns.org/
 
