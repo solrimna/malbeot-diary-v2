@@ -65,6 +65,7 @@ async def test_diary_isolated_between_users(client, auth_headers, diary_id):
     """다른 사용자는 내 일기를 조회할 수 없음"""
     await client.post("/api/v1/auth/register", json={
         "username": "otheruser",
+        "email": "otheruser@example.com",
         "password": "testpass2",
         "nickname": "다른유저",
     })

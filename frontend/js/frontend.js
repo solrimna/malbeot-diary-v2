@@ -121,12 +121,6 @@ function initCustomSelect(nativeSelect) {
     updateTrigger();
 }
 
-function escapeHtml(text) {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
-}
-
 function formatDiaryDate(dateString) {
     const date = new Date(dateString);
     if (Number.isNaN(date.getTime())) return dateString;
@@ -166,16 +160,21 @@ function disableAutocompleteOutsideLogin() {
 function toggleForm(type) {
     const loginForm = document.getElementById("login-form");
     const signupForm = document.getElementById("signup-form");
+    const forgotForm = document.getElementById("forgot-password-form");
 
     if (!loginForm || !signupForm) {
         return;
     }
 
+    loginForm.classList.add("hidden-form");
+    signupForm.classList.add("hidden-form");
+    if (forgotForm) forgotForm.classList.add("hidden-form");
+
     if (type === "signup") {
-        loginForm.classList.add("hidden-form");
         signupForm.classList.remove("hidden-form");
+    } else if (type === "forgot") {
+        if (forgotForm) forgotForm.classList.remove("hidden-form");
     } else {
-        signupForm.classList.add("hidden-form");
         loginForm.classList.remove("hidden-form");
     }
 }
@@ -197,55 +196,6 @@ function closeDiaryModal() {
     modal.classList.add("hidden");
 }
 
-
-// 미사용 코드 주석
-// function saveDiaryEntry() {
-//     const dateInput = document.getElementById("diary-date");
-//     const titleInput = document.getElementById("diary-title");
-//     const contentInput = document.getElementById("diary-content");
-//     const shelf = document.getElementById("diary-shelf");
-//     const emptyState = document.getElementById("diary-empty-state");
-
-//     if (!dateInput || !titleInput || !contentInput || !shelf) return;
-
-//     const date = dateInput.value.trim();
-//     const title = titleInput.value.trim();
-//     const content = contentInput.value.trim();
-
-//     if (!date || !title || !content) {
-//         showAppToast("날짜, 제목, 일기 내용을 모두 입력해주세요.", "info", "입력 확인");
-//         return;
-//     }
-
-//     if (emptyState) {
-//         emptyState.remove();
-//     }
-
-//     const book = document.createElement("div");
-//     book.className = "diary-book";
-
-//     book.innerHTML = `
-//         <div class="diary-book-inner">
-//             <div class="diary-book-date">${escapeHtml(formatDiaryDate(date))}</div>
-//             <div class="diary-book-title">${escapeHtml(title)}</div>
-
-//             <div class="diary-book-footer">
-//                 <button type="button" class="diary-book-delete" onclick="deleteDiaryBook(this)">삭제</button>
-//             </div>
-//         </div>
-//     `;
-
-//     shelf.prepend(book);
-
-//     dateInput.value = "";
-//     titleInput.value = "";
-//     contentInput.value = "";
-
-//     diaryShelfIndex = 0;
-//     updateDiaryShelfPosition();
-//     renderDiaryProgress();
-//     closeDiaryModal();
-// }
 
 async function deleteDiaryBook(button) {
     const isConfirmed = await showAppConfirm("삭제하시겠습니까?", "일기 삭제");

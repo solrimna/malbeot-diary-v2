@@ -45,3 +45,9 @@ async function apiRequest(path, options = {}) {
 function getJsonBody(data) {
     return JSON.stringify(data);
 }
+
+function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+}

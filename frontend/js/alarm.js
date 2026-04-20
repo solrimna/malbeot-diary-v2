@@ -202,8 +202,9 @@ function renderAlarmList(alarms) {
     const item = document.createElement("div");
     item.className = "profile-alarm-row";
 
-    const korDays = formatDaysKorean(alarm.repeat_days);
-    const timeDisplay = alarm.alarm_time.slice(0, 5);
+    const korDays = escapeHtml(formatDaysKorean(alarm.repeat_days));
+    const timeDisplay = escapeHtml(alarm.alarm_time.slice(0, 5));
+    const alarmId = encodeURIComponent(alarm.id);
 
     item.innerHTML = `
       <div>
@@ -212,8 +213,8 @@ function renderAlarmList(alarms) {
         <p class="profile-alarm-item-days">${korDays}</p>
       </div>
       <div class="profile-alarm-item-actions">
-        <button type="button" data-alarm-id="${alarm.id}" class="edit-alarm-btn profile-calendar-nav">수정</button>
-        <button type="button" data-alarm-id="${alarm.id}" class="delete-alarm-btn profile-calendar-nav is-danger">삭제</button>
+        <button type="button" data-alarm-id="${alarmId}" class="edit-alarm-btn profile-calendar-nav">수정</button>
+        <button type="button" data-alarm-id="${alarmId}" class="delete-alarm-btn profile-calendar-nav is-danger">삭제</button>
       </div>
     `;
 

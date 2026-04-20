@@ -22,8 +22,49 @@ async function loadProfile() {
         const initial = (user.nickname || user.username || "?")[0].toUpperCase();
         const avatar = document.getElementById("profile-avatar");
         avatar.textContent = initial;
+
+        // 이메일 인증 상태
+        const emailDisplay = document.getElementById("email-display");
+        const statusEl = document.getElementById("email-verified-status");
+        const resendBtn = document.getElementById("resend-verification-btn");
+
+        if (user.email) {
+            emailDisplay.textContent = user.email;
+        }
+
+        if (user.auth_provider !== "local") {
+            statusEl.textContent = "소셜 로그인 계정은 이메일 인증이 필요하지 않습니다.";
+            statusEl.style.color = "rgba(255,255,255,0.4)";
+        } else if (user.is_verified) {
+            statusEl.textContent = "✓ 인증 완료";
+            statusEl.style.color = "#7ec97e";
+        } else {
+            statusEl.textContent = "⚠ 미인증 — 일부 기능이 제한될 수 있어요.";
+            statusEl.style.color = "#ffb347";
+            resendBtn.classList.remove("hidden");
+        }
     } catch (err) {
-        // 401은 api.js에서 리다이렉트 처리됨
+        // 401은 base.js에서 리다이렉트 처리됨
+    }
+}
+
+// ── 인증 메일 재발송 ──────────────────────────────────────
+async function resendVerification() {
+    const btn = document.getElementById("resend-verification-btn");
+    const msg = document.getElementById("resend-msg");
+
+    btn.disabled = true;
+    btn.textContent = "발송 중...";
+
+    try {
+        await apiRequest("/auth/resend-verification", { method: "POST" });
+        showMsg(msg, "인증 메일을 발송했습니다. 메일함을 확인해주세요.", false);
+        btn.textContent = "재발송";
+    } catch (err) {
+        showMsg(msg, err.message || "발송에 실패했습니다.", true);
+        btn.textContent = "인증 메일 재발송";
+    } finally {
+        btn.disabled = false;
     }
 }
 

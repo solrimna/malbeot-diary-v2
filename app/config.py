@@ -28,6 +28,12 @@ class Settings(BaseSettings):
     VAPID_PRIVATE_KEY: str = ""
     VAPID_CLAIMS_SUB: str = "mailto:test@example.com"
 
+    # Brevo (이메일 인증 & 비밀번호 재설정)
+    BREVO_API_KEY: str = ""
+    BREVO_SENDER_EMAIL: str = "noreply@haru-commit.com"
+    BREVO_SENDER_NAME: str = "하루.commit()"
+    FRONTEND_BASE_URL: str = "https://haru-commit.com"
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

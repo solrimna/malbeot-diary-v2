@@ -44,7 +44,7 @@ class AppNav extends HTMLElement {
                     <div class="nav-profile-wrap" id="nav-profile-wrap">
                         <button type="button" class="nav-profile-btn" id="nav-profile-btn" aria-label="프로필 메뉴">
                             <span class="nav-profile-icon">👤</span>
-                            ${nickname ? `<span class="nav-profile-nickname">${nickname}</span>` : ""}
+                            ${nickname ? `<span class="nav-profile-nickname">${escapeHtml(nickname)}</span>` : ""}
                         </button>
                         <div class="nav-profile-dropdown" id="nav-profile-dropdown">
                             ${dropdownItems}

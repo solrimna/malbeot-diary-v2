@@ -223,6 +223,22 @@
                 </div>
             </div>
 
+            <!-- 이메일 인증 카드 -->
+            <div class="mp-card mb-6">
+                <p class="font-script text-xl text-white/70 mb-1">Email</p>
+                <h2 class="text-xl font-semibold text-white mb-6">이메일 인증</h2>
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p id="email-display" class="text-white/70 text-sm mb-2">—</p>
+                        <p id="email-verified-status" class="text-sm font-medium">—</p>
+                    </div>
+                    <button type="button" id="resend-verification-btn" class="mp-btn hidden" onclick="resendVerification()">
+                        인증 메일 재발송
+                    </button>
+                </div>
+                <p id="resend-msg" class="mp-msg hidden"></p>
+            </div>
+
             <!-- 로그아웃 + 탈퇴 카드 -->
             <div class="mp-card">
                 <p class="font-script text-xl text-white/70 mb-1">Account</p>
@@ -254,8 +270,8 @@
         </div>
     </main>
 
+    <script src="js/base.js"></script>
     <script src="js/nav.js"></script>
-    <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/search.js"></script>
     <script src="js/stt.js"></script>

@@ -219,6 +219,7 @@ async function handleSignupSubmit(event) {
     event.preventDefault();
 
     const nicknameInput = document.getElementById("signup-nickname");
+    const emailInput = document.getElementById("signup-email");
     const usernameInput = document.getElementById("signup-username");
     const passwordInput = document.getElementById("signup-password");
     const message = document.getElementById("signup-message");
@@ -227,10 +228,11 @@ async function handleSignupSubmit(event) {
     clearMessage(message);
 
     const nickname = nicknameInput?.value.trim() || "";
+    const email = emailInput?.value.trim() || "";
     const username = usernameInput?.value.trim() || "";
     const password = passwordInput?.value || "";
 
-    if (!nickname || !username || !password) {
+    if (!nickname || !email || !username || !password) {
         setMessage(message, "모든 항목을 입력해주세요.", true);
         return;
     }
@@ -243,8 +245,8 @@ async function handleSignupSubmit(event) {
     setButtonLoading(submitButton, true, "Join Us", "Joining...");
 
     try {
-        await register({ nickname, username, password });
-        setMessage(message, "회원가입이 완료되었습니다. 로그인해주세요.", false);
+        await register({ nickname, email, username, password });
+        setMessage(message, "가입이 완료되었습니다. 인증 메일을 발송했습니다. 메일함을 확인해주세요.", false);
         event.target.reset();
 
         const pwMessage = document.getElementById("password-match-msg");
@@ -264,9 +266,42 @@ async function handleSignupSubmit(event) {
     }
 }
 
+async function handleForgotPasswordSubmit(event) {
+    event.preventDefault();
+
+    const emailInput = document.getElementById("forgot-email");
+    const message = document.getElementById("forgot-message");
+    const submitButton = document.getElementById("forgot-submit");
+
+    clearMessage(message);
+
+    const email = emailInput?.value.trim() || "";
+    if (!email) {
+        setMessage(message, "이메일을 입력해주세요.", true);
+        return;
+    }
+
+    setButtonLoading(submitButton, true, "Send Reset Link", "Sending...");
+
+    try {
+        await apiRequest("/auth/forgot-password", {
+            method: "POST",
+            body: JSON.stringify({ email }),
+        });
+        setMessage(message, "입력하신 이메일로 재설정 링크를 발송했습니다.", false);
+        emailInput.value = "";
+    } catch (_error) {
+        // 서버는 항상 200 반환 (보안) — 네트워크 오류 등 예외 처리
+        setMessage(message, "요청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", true);
+    } finally {
+        setButtonLoading(submitButton, false, "Send Reset Link", "Sending...");
+    }
+}
+
 function initLoginPage() {
     const loginForm = document.getElementById("login-form-element");
     const signupForm = document.getElementById("signup-form-element");
+    const forgotForm = document.getElementById("forgot-form-element");
     const passwordInput = document.getElementById("signup-password");
     const passwordConfirmInput = document.getElementById("signup-password-confirm");
 
@@ -279,8 +314,16 @@ function initLoginPage() {
         return;
     }
 
+    // 이메일 인증 완료 후 리다이렉트 처리
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("verified") === "true") {
+        const banner = document.getElementById("verified-banner");
+        if (banner) banner.classList.remove("hidden");
+    }
+
     loginForm.addEventListener("submit", handleLoginSubmit);
     signupForm.addEventListener("submit", handleSignupSubmit);
+    forgotForm?.addEventListener("submit", handleForgotPasswordSubmit);
     passwordInput?.addEventListener("input", checkPasswordMatch);
     passwordConfirmInput?.addEventListener("input", checkPasswordMatch);
 }

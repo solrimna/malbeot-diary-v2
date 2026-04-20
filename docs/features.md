@@ -43,6 +43,30 @@ AI 기반 감성 일기 서비스. 음성 입력, AI 피드백, 맞춤형 말벗
 - 사용자 프로필: 닉네임, 프로필 이미지 URL
 - DB 확장 (소셜 로그인 대비): `email`, `auth_provider`, `social_id` 컬럼 추가 (마이그레이션 `005`)
 
+**이메일 인증 (회원가입 — 매직 링크)**
+
+| 메서드 | 엔드포인트 | 설명 |
+|--------|-----------|------|
+| `POST` | `/api/v1/auth/register` | 회원가입 → 인증 메일 자동 발송 |
+| `GET` | `/api/v1/auth/verify-email` | 매직 링크 클릭 → 이메일 인증 완료 |
+
+- 회원가입 직후 Brevo 트랜잭션 메일로 인증 링크 발송
+- 링크에 서명된 단기 토큰 포함 (만료: 24시간)
+- 미인증 계정은 로그인 시 안내 메시지 표시 (또는 로그인 차단 — 정책 결정 후 반영)
+- 이메일 인증 완료 시 `users.is_verified = true` 업데이트
+
+**비밀번호 분실 & 재설정**
+
+| 메서드 | 엔드포인트 | 설명 |
+|--------|-----------|------|
+| `POST` | `/api/v1/auth/forgot-password` | 이메일 입력 → 재설정 링크 발송 |
+| `POST` | `/api/v1/auth/reset-password` | 토큰 + 새 비밀번호 → 비밀번호 변경 |
+
+- Brevo 트랜잭션 메일로 재설정 링크 발송
+- 링크에 서명된 단기 토큰 포함 (만료: 1시간)
+- 토큰 1회 사용 후 무효화
+- 메일 발송 서비스: **Brevo** (`sib-api-v3-sdk` 또는 Brevo REST API)
+
 ---
 
 ## 2. 일기 CRUD
@@ -203,9 +227,10 @@ AI 기반 감성 일기 서비스. 음성 입력, AI 피드백, 맞춤형 말벗
 | 데이터베이스 | PostgreSQL (운영) / SQLite (개발), Alembic |
 | AI / LLM | OpenAI GPT-4o-mini, OpenAI TTS |
 | 음성 인식 | Azure Cognitive Services Speech / Web Speech API |
+| 이메일 | Brevo (트랜잭션 메일 — 이메일 인증, 비밀번호 재설정) |
 | 캐시 | Redis 7 (선택) |
 | 스케줄러 | APScheduler 3.10.4 |
 | 웹 푸시 | pywebpush 2.3.0 |
 | 프론트엔드 | Vanilla JS (ES6+), Tailwind CSS, tsParticles |
 | DevOps | Docker, Docker Compose, Nginx, Let's Encrypt |
-| 인프라 | Terraform, AWS (EC2, RDS), DuckDNS |
+| 인프라 | Terraform, AWS (EC2, RDS), Cloudflare (도메인 haru-commit.com) |
