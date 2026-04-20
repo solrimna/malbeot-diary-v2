@@ -70,8 +70,9 @@ async def client(db, engine):
         patch.object(GPTService, "stream_feedback", _mock_stream_feedback),
         patch("app.services.gpt_service.gpt_service.generate_hashtags", AsyncMock(return_value=[])),
         patch("app.services.gpt_service.gpt_service.generate_summary", AsyncMock(return_value=None)),
-        patch("app.services.email_service.send_verification_email", AsyncMock()),
-        patch("app.services.email_service.send_password_reset_email", AsyncMock()),
+        patch("app.api.v1.diary._bg_create_summary", AsyncMock()),
+        patch("app.services.auth_service.send_verification_email", AsyncMock()),
+        patch("app.services.auth_service.send_password_reset_email", AsyncMock()),
     ):
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
             yield ac
