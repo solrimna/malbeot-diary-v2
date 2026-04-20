@@ -1,13 +1,13 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 # ── 회원가입 요청 데이터 ──────────────────────────
 class UserCreate(BaseModel):
     username: str = Field(min_length=3, max_length=50)
-    email: str | None = Field(default=None, max_length=255)
+    email: EmailStr = Field(max_length=255)   # 로컬 가입은 이메일 필수
     password: str = Field(min_length=8)
     nickname: str = Field(min_length=1, max_length=50)
 
@@ -15,6 +15,17 @@ class UserCreate(BaseModel):
     @classmethod
     def lowercase_username(cls, v: str) -> str:
         return v.lower()
+
+
+# ── 비밀번호 찾기 요청 ────────────────────────────
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+# ── 비밀번호 재설정 요청 ──────────────────────────
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str = Field(min_length=8)
 
 
 # ── 로그인 요청 데이터 ───────────────────────────
@@ -49,7 +60,7 @@ class UserProfileResponse(BaseModel):
     auth_provider: str
     created_at: datetime
     last_login_at: datetime | None
-
+    is_verified: bool | None
     class Config:
         from_attributes = True
 

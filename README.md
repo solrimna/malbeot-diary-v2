@@ -28,6 +28,10 @@
 
 ## 변경 이력
 
+- 2026-04-21 이메일 인증 & 비밀번호 재설정 기능 추가 — Brevo 트랜잭션 메일 연동, 회원가입 매직 링크 발송, 비밀번호 재설정 링크, 인증 재발송(`POST /auth/resend-verification`), my_profile.html 인증 상태 UI, EmailToken 마이그레이션(006)
+- 2026-04-21 XSS 보안 수정 — alarm.js·nav.js `escapeHtml` 적용, email_service.py `html.escape()` 적용
+- 2026-04-21 api.js → base.js 통합 — `escapeHtml` 공통 함수 포함, 전 페이지 로딩 순서 정렬
+- 2026-04-21 도메인 변경 — `malbeot.duckdns.org` → `haru-commit.com`
 - 2026-04-13 보호 페이지 렌더링 전 인증 체크 — 토큰 검증 후 DOM 렌더링으로 깜빡임 제거 (`auth-guard.js`)
 - 2026-04-13 소셜 로그인 대비 users 테이블 확장 — email, auth_provider, social_id 컬럼 추가 (마이그레이션 `005`)
 - 2026-04-13 CI/CD 마이그레이션 순서 변경 — 앱 기동 전 `alembic upgrade head` 실행
@@ -60,7 +64,7 @@
 | Web Push | pywebpush 2.3.0 |
 | Frontend | Vanilla JS (ES6+), Tailwind CSS, tsParticles |
 | DevOps | Docker, Docker Compose, Nginx, Let's Encrypt |
-| Infra | Terraform, AWS (EC2, RDS), DuckDNS |
+| Infra | Terraform, AWS (EC2, RDS), Cloudflare (도메인 haru-commit.com) |
 
 ---
 
@@ -71,7 +75,7 @@
   │                        Client (Browser)                      │
   │  index  login  diary_write  diary_read  my-diary  profile   │
   │  my_profile  settings  persona-onboarding                  │
-  │  js/ (nav.js · api.js · auth.js · auth-guard.js)           │
+  │  js/ (nav.js · base.js · auth.js · auth-guard.js)          │
   │      (diary.js · search.js · alarm.js · stt.js)            │
   │      (frontend.js · my_profile.js · particles.js)          │
   │  stt.js: Azure STT ← WebSocket / Web Speech API ← 브라우저 │
