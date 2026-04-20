@@ -70,6 +70,8 @@ async def client(db, engine):
         patch.object(GPTService, "stream_feedback", _mock_stream_feedback),
         patch("app.services.gpt_service.gpt_service.generate_hashtags", AsyncMock(return_value=[])),
         patch("app.services.gpt_service.gpt_service.generate_summary", AsyncMock(return_value=None)),
+        patch("app.services.email_service.send_verification_email", AsyncMock()),
+        patch("app.services.email_service.send_password_reset_email", AsyncMock()),
     ):
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
             yield ac
@@ -81,6 +83,7 @@ async def auth_headers(client):
     """회원가입 + 로그인 후 인증 헤더 반환"""
     await client.post("/api/v1/auth/register", json={
         "username": "testuser",
+        "email": "testuser@example.com",
         "password": "testpass1",
         "nickname": "테스터",
     })
